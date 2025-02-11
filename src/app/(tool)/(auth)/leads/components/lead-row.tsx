@@ -1,18 +1,15 @@
-import {useState} from "react";
+import {Icons} from "@/components/icons";
 import {
+  ContactTypeData,
   Lead,
   LeadStatuses,
-  ContactTypeData,
   SourceDataFull,
 } from "@/config/data";
-import {AnimatePresence, motion} from "framer-motion";
-import {Icons} from "@/components/icons";
-import Link from "next/link";
-import {hexToRgba, formatTimeDifference} from "@/lib/utils";
-import {Timestamp, updateDoc} from "firebase/firestore";
 import {db} from "@/config/firebase";
-import {setDoc, doc} from "firebase/firestore";
-import {getFaviconUrl} from "@/lib/utils";
+import {formatTimeDifference, getFaviconUrl, hexToRgba} from "@/lib/utils";
+import {doc, Timestamp, updateDoc} from "firebase/firestore";
+import Link from "next/link";
+import {useState} from "react";
 
 export const LeadRow = ({
   lead,

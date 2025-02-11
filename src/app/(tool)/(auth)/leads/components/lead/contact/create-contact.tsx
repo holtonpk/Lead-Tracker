@@ -1,15 +1,5 @@
-import {useState} from "react";
-import {Icons, LinkedInLogo} from "@/components/icons";
+import {Icons} from "@/components/icons";
 import {Button} from "@/components/ui/button";
-import {Input} from "@/components/ui/input";
-import {RolesData, ContactTypeData, ContactPoint, Contact} from "@/config/data";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Dialog,
   DialogContent,
@@ -19,15 +9,19 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import {db} from "@/config/firebase";
+import {Input} from "@/components/ui/input";
 import {
-  doc,
-  Timestamp,
-  updateDoc,
-  serverTimestamp,
-  arrayUnion,
-} from "firebase/firestore";
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {Contact, ContactPoint, ContactTypeData, RolesData} from "@/config/data";
+import {db} from "@/config/firebase";
 import {useToast} from "@/hooks/use-toast";
+import {arrayUnion, doc, serverTimestamp, updateDoc} from "firebase/firestore";
+import {useState} from "react";
 
 export const NewContactButton = ({
   text,

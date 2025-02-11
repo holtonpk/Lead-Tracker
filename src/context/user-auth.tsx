@@ -1,23 +1,17 @@
 "use client";
-import React, {
-  useContext,
-  useState,
-  useEffect,
-  createContext,
-  useRef,
-} from "react";
+import React, {createContext, useContext, useEffect, useState} from "react";
 
 // import nookies from "nookies";
 import {
   User as FirebaseUser,
-  signOut,
   GoogleAuthProvider,
-  updateProfile,
   signInWithPopup,
+  signOut,
+  updateProfile,
 } from "firebase/auth";
 
-import {doc, setDoc, getDoc} from "firebase/firestore";
-import {db, auth, app} from "@/config/firebase";
+import {auth, db} from "@/config/firebase";
+import {doc, getDoc, setDoc} from "firebase/firestore";
 // import {Notifications, CompletedVideo, PayoutLocation} from "@/config/data";
 
 interface AuthContextType {

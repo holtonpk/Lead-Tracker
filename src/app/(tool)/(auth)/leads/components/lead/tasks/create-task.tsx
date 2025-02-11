@@ -1,19 +1,6 @@
-import {useState} from "react";
-import {Icons, LinkedInLogo} from "@/components/icons";
-import {CalendarIcon} from "lucide-react";
+import {Icons} from "@/components/icons";
 import {Button} from "@/components/ui/button";
-import {Textarea} from "@/components/ui/textarea";
-import {format} from "date-fns";
-import {cn} from "@/lib/utils";
 import {Calendar} from "@/components/ui/calendar";
-import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import {
   Dialog,
   DialogContent,
@@ -23,23 +10,29 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
 import {
-  Lead,
-  Task,
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {Textarea} from "@/components/ui/textarea";
+import {
   Contact,
   ContactPoint,
   ContactTypeData,
+  Lead,
+  Task,
 } from "@/config/data";
-import {
-  doc,
-  Timestamp,
-  updateDoc,
-  serverTimestamp,
-  arrayUnion,
-} from "firebase/firestore";
-import {convertDateToTimestamp, formatTimeDifference} from "@/lib/utils";
-import {useToast} from "@/hooks/use-toast";
 import {db} from "@/config/firebase";
+import {useToast} from "@/hooks/use-toast";
+import {cn, convertDateToTimestamp} from "@/lib/utils";
+import {format} from "date-fns";
+import {arrayUnion, doc, Timestamp, updateDoc} from "firebase/firestore";
+import {CalendarIcon} from "lucide-react";
+import {useState} from "react";
 
 export const CreateNextTask = ({lead}: {lead: Lead}) => {
   const [open, setOpen] = useState(false);

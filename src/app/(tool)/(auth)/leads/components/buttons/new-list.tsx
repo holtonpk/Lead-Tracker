@@ -23,7 +23,6 @@ import {
 import {Lead} from "@/config/data";
 import {getFaviconUrl} from "@/lib/utils";
 import {Icons} from "@/components/icons";
-import {get} from "http";
 
 export const CreateNewList = ({
   children,

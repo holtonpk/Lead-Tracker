@@ -1,14 +1,10 @@
 "use client";
-import React, {EventHandler, useRef, useState} from "react";
 import {Button} from "@/components/ui/button";
-import {Input} from "@/components/ui/input";
 import {useAuth} from "@/context/user-auth";
+import React from "react";
 // import {PasswordInput} from "@/components/ui/password-input";
 import {Icons} from "@/components/icons";
 import {useRouter} from "next/navigation";
-import {PasswordInput} from "@/components/ui/password-input";
-import {Logo} from "@/components/icons";
-import Background from "@/app/background";
 
 const RegisterForm = () => {
   const [isLoading, setIsLoading] = React.useState<boolean>(false);

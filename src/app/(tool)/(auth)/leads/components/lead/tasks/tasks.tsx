@@ -1,39 +1,4 @@
-import {useState} from "react";
-import {Contact, Lead, ContactTypeData} from "@/config/data";
-import {Icons, LinkedInLogo} from "@/components/icons";
-import {db} from "@/config/firebase";
-import {
-  doc,
-  getDoc,
-  Timestamp,
-  updateDoc,
-  serverTimestamp,
-} from "firebase/firestore";
-import {format} from "date-fns";
-import {isValidURL} from "@/lib/utils";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog";
-import {Calendar} from "@/components/ui/calendar";
-import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
-import {CalendarIcon} from "lucide-react";
-import {Button} from "@/components/ui/button";
-import {
-  convertDateToTimestamp,
-  convertTimestampToDate,
-  formatTimeDifference,
-} from "@/lib/utils";
-import {CreateNextTask} from "./create-task";
-import {Task} from "@/config/data";
-import Link from "next/link";
-import {LinkButton} from "@/components/ui/link";
-import {Textarea} from "@/components/ui/textarea";
+import {Icons} from "@/components/icons";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -45,6 +10,29 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import {Button} from "@/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {LinkButton} from "@/components/ui/link";
+import {Textarea} from "@/components/ui/textarea";
+import {ContactTypeData, Lead, Task} from "@/config/data";
+import {db} from "@/config/firebase";
+import {
+  convertTimestampToDate,
+  formatTimeDifference,
+  isValidURL,
+} from "@/lib/utils";
+import {format} from "date-fns";
+import {doc, Timestamp, updateDoc} from "firebase/firestore";
+import {useState} from "react";
+import {CreateNextTask} from "./create-task";
 
 export const Tasks = ({lead}: {lead: Lead}) => {
   const orderedTasks =

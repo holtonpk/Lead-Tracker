@@ -1,15 +1,15 @@
-import {useState} from "react";
-import {Contact, Lead, LeadStatuses} from "@/config/data";
-import {AnimatePresence, motion} from "framer-motion";
-import {Icons, LinkedInLogo} from "@/components/icons";
-import {Button} from "@/components/ui/button";
-import {Textarea} from "@/components/ui/textarea";
-import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
-import Link from "next/link";
-import {db} from "@/config/firebase";
-import {doc, Timestamp, updateDoc} from "firebase/firestore";
 import {ContactDisplay} from "@/app/(tool)/(auth)/leads/components/lead/contact/contact-display";
 import {Tasks} from "@/app/(tool)/(auth)/leads/components/lead/tasks/tasks";
+import {Icons, LinkedInLogo} from "@/components/icons";
+import {Button} from "@/components/ui/button";
+import {Tabs, TabsContent, TabsList, TabsTrigger} from "@/components/ui/tabs";
+import {Textarea} from "@/components/ui/textarea";
+import {Lead} from "@/config/data";
+import {db} from "@/config/firebase";
+import {doc, updateDoc} from "firebase/firestore";
+import {motion} from "framer-motion";
+import Link from "next/link";
+import {useState} from "react";
 
 export const ExpandedLead = ({
   lead,

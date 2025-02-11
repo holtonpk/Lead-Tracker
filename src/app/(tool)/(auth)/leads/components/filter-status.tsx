@@ -1,9 +1,9 @@
-import {LeadStatuses} from "@/config/data";
-import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
-import {Button} from "@/components/ui/button";
-import {Separator} from "@/components/ui/separator";
-import {Icon, PlusCircle} from "lucide-react";
 import {Icons} from "@/components/icons";
+import {Button} from "@/components/ui/button";
+import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
+import {Separator} from "@/components/ui/separator";
+import {LeadStatuses} from "@/config/data";
+import {PlusCircle} from "lucide-react";
 
 export const FilterStatus = ({
   selectedStatus,

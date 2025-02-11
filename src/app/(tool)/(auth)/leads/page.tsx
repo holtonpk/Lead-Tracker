@@ -1,15 +1,10 @@
 "use client";
-import React, {useEffect, useState} from "react";
-import {Icons} from "@/components/icons";
-import {Input} from "@/components/ui/input";
-import {Button} from "@/components/ui/button";
-import {AnimatePresence, motion} from "framer-motion";
-import {Lead, SourceData} from "@/config/data";
+import {CreateNewList} from "@/app/(tool)/(auth)/leads/components/buttons/new-list";
 import {ExpandedLead} from "@/app/(tool)/(auth)/leads/components/expanded-lead";
-import {LeadRow} from "@/app/(tool)/(auth)/leads/components/lead-row";
 import {FilterStatus} from "@/app/(tool)/(auth)/leads/components/filter-status";
-import {Icon, List, ListPlus} from "lucide-react";
-import {getFaviconUrl} from "@/lib/utils";
+import {LeadRow} from "@/app/(tool)/(auth)/leads/components/lead-row";
+import {Icons} from "@/components/icons";
+import {Button} from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -19,6 +14,7 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
+import {Input} from "@/components/ui/input";
 import {
   Select,
   SelectContent,
@@ -27,21 +23,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import {Textarea} from "@/components/ui/textarea";
-import {CreateNewList} from "@/app/(tool)/(auth)/leads/components/buttons/new-list";
-import {
-  getDocs,
-  setDoc,
-  doc,
-  collection,
-  where,
-  query,
-  onSnapshot,
-  getDoc,
-  deleteDoc,
-  updateDoc,
-} from "firebase/firestore";
+import {Lead, SourceData} from "@/config/data";
 import {db} from "@/config/firebase";
-import {Description} from "@radix-ui/react-dialog";
+import {collection, onSnapshot, query, where} from "firebase/firestore";
+import {AnimatePresence, motion} from "framer-motion";
+import {List, ListPlus} from "lucide-react";
+import {useEffect, useState} from "react";
 
 const Page = () => {
   const [LeadLists, setLeadLists] = useState<
