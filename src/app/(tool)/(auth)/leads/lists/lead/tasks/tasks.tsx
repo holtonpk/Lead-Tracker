@@ -30,7 +30,7 @@ import {
   isValidURL,
 } from "@/lib/utils";
 import {format} from "date-fns";
-import {doc, Timestamp, updateDoc} from "firebase/firestore";
+import {doc, Timestamp, updateDoc, serverTimestamp} from "firebase/firestore";
 import {useState} from "react";
 import {CreateNextTask} from "./create-task";
 
@@ -39,7 +39,7 @@ export const Tasks = ({lead}: {lead: Lead}) => {
     lead.tasks && lead.tasks.sort((a, b) => a.date.seconds - b.date.seconds);
 
   return (
-    <div className=" h-fit w-full px-4 mx-auto pb-2 ">
+    <div className=" h-fit w-full px-4 mx-auto pb-4  ">
       <div className="flex  flex-col">
         <LeadCreatedLine lead={lead} />
         {lead.tasks && orderedTasks && (
@@ -72,7 +72,7 @@ const LeadCreatedLine = ({lead}: {lead: Lead}) => {
       >
         <div className="flex  w-full items-center justify-between p-2">
           <h1 className="font-bold text-lg whitespace-nowrap">
-            Lead added by Adam
+            Lead added {lead.createdBy && `by ${lead.createdBy}`}
           </h1>
           <h2 className="text-muted-foreground whitespace-nowrap text-sm">
             {formatTimeDifference(lead.createdAt as Timestamp)}
@@ -97,11 +97,6 @@ const TaskLine = ({
   const [date, setDate] = useState<Date | undefined>(
     convertTimestampToDate(task.date as Timestamp)
   );
-
-  const recommendSave =
-    date &&
-    date.setHours(0, 0, 0, 0) !==
-      convertTimestampToDate(task.date as Timestamp).setHours(0, 0, 0, 0);
 
   const Icon = ContactTypeData.find(
     (point) => point.value == task.contactPoint.type
@@ -129,8 +124,8 @@ const TaskLine = ({
         throw new Error("Task not found");
       }
 
-      const updatedTasks = lead.tasks?.map((task) =>
-        task.id === task.id ? {...task, description: newDescription} : task
+      const updatedTasks = lead.tasks?.map((taskL) =>
+        taskL.id === task.id ? {...taskL, description: newDescription} : taskL
       );
 
       await updateDoc(docRef, {
@@ -145,13 +140,15 @@ const TaskLine = ({
     try {
       const docRef = doc(db, "companies", lead.id);
 
-      const taskToUpdate = lead.tasks?.find((task) => task.id === task.id);
+      const taskToUpdate = lead.tasks?.find((taskL) => taskL.id === task.id);
       if (!taskToUpdate) {
         throw new Error("Task not found");
       }
 
-      const updatedTasks = lead.tasks?.map((task) =>
-        task.id === task.id ? {...task, isCompleted: !task.isCompleted} : task
+      const updatedTasks = lead.tasks?.map((taskL) =>
+        taskL.id === task.id
+          ? {...taskL, isCompleted: !taskL.isCompleted}
+          : taskL
       );
 
       await updateDoc(docRef, {
@@ -167,11 +164,14 @@ const TaskLine = ({
       const docRef = doc(db, "companies", lead.id);
 
       // Filter out the task to be deleted
-      const updatedTasks = lead.tasks?.filter((task) => task.id !== task.id);
+      const updatedTasks = lead.tasks?.filter((taskL) => taskL.id !== task.id);
+
+      console.log("lead.tasks", lead.tasks);
+      console.log("updatedTasks", updatedTasks);
 
       await updateDoc(docRef, {
         tasks: updatedTasks || [],
-        // updatedAt: serverTimestamp()
+        updatedAt: serverTimestamp(),
       });
     } catch (error) {
       console.error("Error deleting task:", error);
@@ -261,34 +261,6 @@ const TaskLine = ({
               {format(convertTimestampToDate(task.date as Timestamp), "PPP")}
             </DialogDescription>
           </DialogHeader>
-          {/* <Popover>
-            <PopoverTrigger asChild>
-              <Button
-                variant={"outline"}
-                className={cn(
-                  "w-[200px] pl-3 text-left font-normal",
-                  !date && "text-muted-foreground"
-                )}
-              >
-                {date ? format(date, "PPP") : <span>Pick a date</span>}
-                <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent className="w-auto p-0" align="start">
-              <Calendar
-                mode="single"
-                selected={date}
-                onSelect={setDate}
-
-                initialFocus
-              />
-            </PopoverContent>
-          </Popover> */}
-
-          {/* <div className="grid gap-1">
-            <h1>Notes</h1>
-            <Textarea value={lead.notes} />
-          </div> */}
           <div className="grid gap-1">
             <h1>Contact point</h1>
             <div className="border p-2 rounded-md flex items-center">

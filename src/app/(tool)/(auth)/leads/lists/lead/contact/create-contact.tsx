@@ -59,7 +59,7 @@ export const NewContactButton = ({
           name,
           role,
           contactPoints: contactPoints.filter(
-            (point) => point.value && point.type
+            (point) => point.value && point.type && point.id
           ), // Only save valid contact points
         } as Contact),
       });
@@ -72,7 +72,9 @@ export const NewContactButton = ({
       // Reset form
       setName("");
       setRole("");
-      setContactPoints([{value: "", type: ""}]);
+      setContactPoints([
+        {value: "", type: "", id: Math.random().toLocaleString()},
+      ]);
       setOpen(false);
     } catch (error) {
       console.error("Error saving contact:", error);
@@ -92,6 +94,7 @@ export const NewContactButton = ({
     {
       value: "",
       type: "",
+      id: Math.random().toLocaleString(),
     },
   ]);
 
@@ -116,6 +119,7 @@ export const NewContactButton = ({
       {
         value: "",
         type: "",
+        id: Math.random().toLocaleString(),
       },
     ]);
   };

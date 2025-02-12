@@ -20,7 +20,7 @@ import {
   setDoc,
   getDoc,
 } from "firebase/firestore";
-import {Lead} from "@/config/data";
+import {Lead, TagColors} from "@/config/data";
 import {getFaviconUrl} from "@/lib/utils";
 import {Icons} from "@/components/icons";
 
@@ -40,6 +40,7 @@ export const CreateNewList = ({
   const [allCompanies, setAllCompanies] = useState<Lead[]>([]);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
+  const [selectedColor, setSelectedColor] = useState<string>(TagColors[0]);
 
   const createList = async () => {
     setIsLoading(true);
@@ -50,6 +51,7 @@ export const CreateNewList = ({
       name: name,
       description: description,
       id: listId,
+      color: selectedColor,
     });
 
     selectedCompanies.forEach(async (companyId) => {
@@ -109,6 +111,26 @@ export const CreateNewList = ({
           onChange={(e) => setName(e.target.value)}
           placeholder="List name"
         />
+        <div className="flex flex-col gap-2">
+          {/* <h1>Tag color</h1> */}
+          <div className="flex gap-2 border border-border p-2 rounded-md w-fit">
+            {TagColors.map((color, index) => (
+              <button
+                key={index}
+                onClick={() => setSelectedColor(color)}
+                className={`h-6 w-6 rounded-full border-2 hover:border-primary  
+                          ${
+                            selectedColor === color
+                              ? "border-primary"
+                              : "border-transparent"
+                          }
+                          
+                          `}
+                style={{backgroundColor: color}}
+              />
+            ))}
+          </div>
+        </div>
 
         <Textarea
           value={description}
@@ -153,7 +175,7 @@ export const CreateNewList = ({
                     )}
                   </div>
                   <div
-                    className={`flex gap-1 items-center flex-grow rounded-md text-lg
+                    className={`flex gap-1 items-center flex-grow rounded-md 
                       ${
                         selectedCompanies.includes(company.id)
                           ? "opacity-100"
@@ -162,7 +184,7 @@ export const CreateNewList = ({
                   >
                     <img
                       src={getFaviconUrl(company.website)}
-                      className="h-8 w-8 rounded-full border bg-white"
+                      className="h-6 w-6 rounded-full border bg-white"
                     />
                     {company.name}
                   </div>

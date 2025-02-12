@@ -11,6 +11,7 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
+import {CalendarIcon} from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -31,7 +32,6 @@ import {useToast} from "@/hooks/use-toast";
 import {cn, convertDateToTimestamp} from "@/lib/utils";
 import {format} from "date-fns";
 import {arrayUnion, doc, Timestamp, updateDoc} from "firebase/firestore";
-import {CalendarIcon} from "lucide-react";
 import {useState} from "react";
 
 export const CreateNextTask = ({lead}: {lead: Lead}) => {

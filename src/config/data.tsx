@@ -1,5 +1,5 @@
 import {InstagramLogo2, LinkedInLogo, XLogo} from "@/components/icons";
-
+import {DocumentReference} from "firebase/firestore";
 import {
   CheckCircle,
   Circle,
@@ -14,22 +14,28 @@ import {
   Link,
 } from "lucide-react";
 
-export const ADMIN_USERS = ["DFXXsRtmfFUk8Vd7Y2LUS5rhY423"];
+export const ADMIN_USERS = [
+  "DFXXsRtmfFUk8Vd7Y2LUS5rhY423",
+  "LfoSX841aFViZB0FDqlJ5a4axWJ2",
+];
 
 export type Lead = {
   name: string;
   description: string;
+  sourceId: string;
   website: string;
   linkedIn?: string;
   notes?: string;
   createdAt: Timestamp;
   updatedAt: Timestamp;
   score: number;
-  status: Statuses;
+  // status: Statuses;
   contacts?: Contact[];
+  lists: string[];
   source: string;
   id: string;
   tasks?: Task[];
+  createdBy: string;
 };
 // deelete this later ================================
 // export type LeadData = {
@@ -84,6 +90,7 @@ export type Contact = {
 export type ContactPoint = {
   type: string;
   value: string;
+  id: string;
 };
 
 // type ContactPoint = {
@@ -142,6 +149,12 @@ export const SourceData = [
   "Swipe labs client",
 ];
 
+export type SourceType = {
+  label: string;
+  color: string;
+  id: string;
+};
+
 export const SourceDataFull = [
   {label: "Swipe labs client", color: "#4F39F6"},
   {label: "Spectrum Equity Portfolio", color: "#FF5733"},
@@ -163,7 +176,7 @@ export const ContactTypeData = [
     icon: Mail,
   },
   {
-    label: "Phone Number",
+    label: "Phone",
     value: "phone",
     icon: Phone,
   },
@@ -204,10 +217,33 @@ export type Status = {
   color: string;
 };
 
+export type List = {
+  name: string;
+  description: string;
+  id: string;
+  color: string;
+};
+
 interface Timestamp {
   nanoseconds: number;
   seconds: number;
 }
+
+export const TagColors = [
+  "#64748b",
+  "#a1a1aa",
+  "#ef4444",
+  "#f97316",
+  "#f59e0b",
+  "#eab308",
+  "#84cc16",
+  "#22c55e",
+  "#10b981",
+  "#3b82f6",
+  "#8b5cf6",
+  "#a855f7",
+  "#ec4899",
+];
 
 export const LeadStatuses: Status[] = [
   {
