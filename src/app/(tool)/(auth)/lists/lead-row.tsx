@@ -14,9 +14,9 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import {RemoveFromList} from "@/app/(tool)/(auth)/leads/lists/buttons/remove-from-list";
-import {AddToList} from "@/app/(tool)/(auth)/leads/lists/buttons/add-to-list";
-import {DeleteLead} from "@/app/(tool)/(auth)/leads/lists/buttons/delete-lead";
+import {RemoveFromList} from "@/app/(tool)/(auth)/lists/buttons/remove-from-list";
+import {AddToList} from "@/app/(tool)/(auth)/lists/buttons/add-to-list";
+import {DeleteLead} from "@/app/(tool)/(auth)/lists/buttons/delete-lead";
 export const LeadRow = ({
   lead,
   setSelectedLead,

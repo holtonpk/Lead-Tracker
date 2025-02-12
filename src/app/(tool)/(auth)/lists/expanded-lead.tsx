@@ -1,8 +1,8 @@
-import {AddToList} from "@/app/(tool)/(auth)/leads/lists/buttons/add-to-list";
-import {DeleteLead} from "@/app/(tool)/(auth)/leads/lists/buttons/delete-lead";
-import {RemoveFromList} from "@/app/(tool)/(auth)/leads/lists/buttons/remove-from-list";
-import {ContactDisplay} from "@/app/(tool)/(auth)/leads/lists/lead/contact/contact-display";
-import {Tasks} from "@/app/(tool)/(auth)/leads/lists/lead/tasks/tasks";
+import {AddToList} from "@/app/(tool)/(auth)/lists/buttons/add-to-list";
+import {DeleteLead} from "@/app/(tool)/(auth)/lists/buttons/delete-lead";
+import {RemoveFromList} from "@/app/(tool)/(auth)/lists/buttons/remove-from-list";
+import {ContactDisplay} from "@/app/(tool)/(auth)/lists/lead/contact/contact-display";
+import {Tasks} from "@/app/(tool)/(auth)/lists/lead/tasks/tasks";
 import {Icons, LinkedInLogo} from "@/components/icons";
 import {Button} from "@/components/ui/button";
 import {

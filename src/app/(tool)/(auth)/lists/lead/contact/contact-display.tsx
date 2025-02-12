@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import {Lead, ContactTypeData, Contact, ContactPoint} from "@/config/data";
-import {NewContactButton} from "@/app/(tool)/(auth)/leads/lists/lead/contact/create-contact";
+import {NewContactButton} from "@/app/(tool)/(auth)/lists/lead/contact/create-contact";
 import {
   Dialog,
   DialogContent,

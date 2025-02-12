@@ -29,8 +29,8 @@ const Navbar = ({
         className={`py-2 px-2 rounded-md  font-bold  flex items-center gap-1 mt-2 w-full text-base
         ${
           tab == "dashboard"
-            ? "bg-muted-foreground/10"
-            : "bg-transparent hover:bg-muted-foreground/10"
+            ? "bg-primary/10"
+            : "bg-transparent hover:bg-primary/5"
         }
         `}
       >
@@ -40,7 +40,7 @@ const Navbar = ({
 
       <button
         onClick={() => setShowLists(!showLists)}
-        className="py-2 px-2 rounded-md  font-bold flex justify-between w-full hover:bg-muted-foreground/10 items-end "
+        className="py-2 px-2 rounded-md  font-bold flex justify-between w-full hover:bg-primary/5 items-end "
       >
         <h1 className="font-bold text-base flex items-center gap-1 ">
           <ListIcon className="h-5 w-5" />

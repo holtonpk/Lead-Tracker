@@ -1,11 +1,11 @@
 "use client";
-import {CreateNewList} from "@/app/(tool)/(auth)/leads/lists/buttons/new-list";
-import {AddToList} from "@/app/(tool)/(auth)/leads/lists/buttons/add-to-list";
-import {RemoveFromList} from "@/app/(tool)/(auth)/leads/lists/buttons/remove-from-list";
-import {ExpandedLead} from "@/app/(tool)/(auth)/leads/lists/expanded-lead";
-import {FilterStatus} from "@/app/(tool)/(auth)/leads/lists/filter-status";
-import {LeadRow} from "@/app/(tool)/(auth)/leads/lists/lead-row";
-import Navbar from "@/app/(tool)/(auth)/leads/navbar/navbar";
+import {CreateNewList} from "@/app/(tool)/(auth)/lists/buttons/new-list";
+import {AddToList} from "@/app/(tool)/(auth)/lists/buttons/add-to-list";
+import {RemoveFromList} from "@/app/(tool)/(auth)/lists/buttons/remove-from-list";
+import {ExpandedLead} from "@/app/(tool)/(auth)/lists/expanded-lead";
+import {FilterStatus} from "@/app/(tool)/(auth)/lists/filter-status";
+import {LeadRow} from "@/app/(tool)/(auth)/lists/lead-row";
+import Navbar from "@/app/(tool)/(auth)/navbar/navbar";
 import {Icons} from "@/components/icons";
 import {Button} from "@/components/ui/button";
 

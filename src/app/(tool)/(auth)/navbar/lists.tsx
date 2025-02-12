@@ -1,4 +1,4 @@
-import {CreateNewList} from "@/app/(tool)/(auth)/leads/lists/buttons/new-list";
+import {CreateNewList} from "@/app/(tool)/(auth)/lists/buttons/new-list";
 import {Icons} from "@/components/icons";
 import React, {useState} from "react";
 import {motion} from "framer-motion";

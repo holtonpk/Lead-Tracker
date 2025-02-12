@@ -41,6 +41,14 @@ import {
 import {LinkButton} from "@/components/ui/link";
 import {Textarea} from "@/components/ui/textarea";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+import {
   convertTimestampToDate,
   formatTimeDifference,
   isValidURL,
@@ -131,20 +139,32 @@ export const Dashboard = () => {
 
   const {currentUser} = useAuth()!;
 
+  const [timeFrame, setTimeFrame] = useState<string>("today");
+
   return (
     <div className="flex flex-col p-6  relative">
       <div className="flex w-full justify-between">
         <h1 className="text-3xl font-bold">Dashboard</h1>
         <div className="flex gap-2 items-center ">
-          {formatDate(new Date())}
+          {/* {formatDate(new Date())} */}
+          <Select value={timeFrame} onValueChange={setTimeFrame}>
+            <SelectTrigger className="w-[120px] border-0 focus:ring-0 focus:ring-transparent  hover:bg-muted">
+              <SelectValue placeholder="Theme" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="today">today</SelectItem>
+              <SelectItem value="week">last 7 days</SelectItem>
+              <SelectItem value="month">last 30 days</SelectItem>
+            </SelectContent>
+          </Select>
           <div className="p-2 bg-foreground/10 flex items-center justify-center rounded-full">
             <CalendarIcon className="h-4 w-4" />
           </div>
         </div>
       </div>
       {/* <p className="mt-2">Today is its time to fucking grind</p> */}
-      <div className="grid grid-cols-3 gap-8 px-20 divide-x border-y py-4 mt-4">
-        <div className="w-full h-fit gap-4 flex rounded-md p-3 px-6">
+      <div className="grid grid-cols-3 gap-8 px-20 divide-x border-y py-4 mt-4 relative">
+        <div className="w-full h-fit gap-4 flex rounded-md p-3 px-6 relative">
           <div className="h-16 w-16 rounded-full bg-foreground/10 flex items-center justify-center">
             <Building2 className="h-8 w-8" />
           </div>

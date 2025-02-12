@@ -1,6 +1,6 @@
 "use client";
-import Navbar from "@/app/(tool)/(auth)/leads/navbar/navbar";
-import {Dashboard} from "@/app/(tool)/(auth)/leads/dashboard/dashboard";
+import Navbar from "@/app/(tool)/(auth)/navbar/navbar";
+import {Dashboard} from "@/app/(tool)/(auth)/dashboard/dashboard";
 import {List as ListType} from "@/config/data";
 import Lists from "./lists/lists";
 import {
