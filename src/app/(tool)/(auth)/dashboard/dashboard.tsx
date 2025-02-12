@@ -218,7 +218,7 @@ export const Dashboard = () => {
         </h1>
         <div className="flex  items-center">
           <Button
-            onClick={goToNextDay}
+            onClick={goToPrevDay}
             className="h-8 w-8 rounded-full -mr-2 "
             variant={"ghost"}
           >
@@ -248,7 +248,7 @@ export const Dashboard = () => {
             </PopoverContent>
           </Popover>
           <Button
-            onClick={goToPrevDay}
+            onClick={goToNextDay}
             className="h-8 w-8 rounded-full -ml-2 "
             variant={"ghost"}
           >
