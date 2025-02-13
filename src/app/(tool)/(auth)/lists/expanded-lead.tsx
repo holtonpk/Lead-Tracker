@@ -98,7 +98,7 @@ export const ExpandedLead = ({
               </h1>
               -
               <Link
-                href={lead.website}
+                href={new URL(lead.website).origin}
                 target="_blank"
                 className=" rounded-[4px] hover:opacity-80 h-fit"
               >
@@ -149,13 +149,13 @@ export const ExpandedLead = ({
           className="w-full overflow-hidden max-h-[calc(100vh-191px)]  mt-4 pb-4 "
         >
           <TabsList className="grid grid-cols-3 w-full bg-muted-foreground/20 border">
-            <TabsTrigger value="flow">Flow</TabsTrigger>
+            <TabsTrigger value="flow">Tasks</TabsTrigger>
             <TabsTrigger value="contacts">Contacts</TabsTrigger>
             <TabsTrigger value="notes">Notes</TabsTrigger>
           </TabsList>
           <TabsContent
             value="flow"
-            className="overflow-scroll max-h-[calc(100vh-230px)] relative shadow-lg bg-background rounded-md border"
+            className="overflow-scroll max-h-[calc(100vh-200px)] pb-16 relative shadow-lg bg-background rounded-md border"
           >
             <Tasks lead={lead} />
           </TabsContent>

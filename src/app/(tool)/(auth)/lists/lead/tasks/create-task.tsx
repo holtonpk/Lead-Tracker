@@ -26,6 +26,7 @@ import {
   ContactTypeData,
   Lead,
   Task,
+  TaskActions,
 } from "@/config/data";
 import {db} from "@/config/firebase";
 import {useToast} from "@/hooks/use-toast";
@@ -45,9 +46,7 @@ export const CreateNextTask = ({lead}: {lead: Lead}) => {
 
   const {toast} = useToast();
 
-  const [action, setAction] = useState<
-    "initialContact" | "followUp" | undefined
-  >(undefined);
+  const [action, setAction] = useState<TaskActions | undefined>(undefined);
   const [contact, setContact] = useState<Contact | undefined>();
   const [outReachCopy, setOutReachCopy] = useState<string>("");
   const [isCompleted, setIsCompleted] = useState<boolean>(false);
@@ -57,7 +56,7 @@ export const CreateNextTask = ({lead}: {lead: Lead}) => {
   const saveStep = async () => {
     if (!date || !action || !contact || !contactPoint) {
       toast({
-        title: "A is empty",
+        title: "A field is empty",
         description: "Please fill in all required fields",
         variant: "destructive",
       });
@@ -138,6 +137,7 @@ export const CreateNextTask = ({lead}: {lead: Lead}) => {
               <SelectContent>
                 <SelectItem value="initialContact">Initiate Contact</SelectItem>
                 <SelectItem value="followUp">Follow Up</SelectItem>
+                <SelectItem value="closed">Close Lead</SelectItem>
               </SelectContent>
             </Select>
             with
@@ -152,12 +152,17 @@ export const CreateNextTask = ({lead}: {lead: Lead}) => {
                 <SelectValue placeholder="Select a contact" />
               </SelectTrigger>
               <SelectContent>
-                {lead?.contacts &&
+                {lead?.contacts && lead?.contacts.length > 0 ? (
                   lead.contacts?.map((contact, i) => (
                     <SelectItem key={i} value={contact.name}>
                       {contact.name}
                     </SelectItem>
-                  ))}
+                  ))
+                ) : (
+                  <SelectItem disabled={true} value={"empty"}>
+                    No contacts found
+                  </SelectItem>
+                )}
               </SelectContent>
             </Select>
           </div>

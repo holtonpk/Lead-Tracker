@@ -33,13 +33,14 @@ import {format} from "date-fns";
 import {doc, Timestamp, updateDoc, serverTimestamp} from "firebase/firestore";
 import {useState} from "react";
 import {CreateNextTask} from "./create-task";
+import {NewContactButton} from "@/app/(tool)/(auth)/lists/lead/contact/create-contact";
 
 export const Tasks = ({lead}: {lead: Lead}) => {
   const orderedTasks =
     lead.tasks && lead.tasks.sort((a, b) => a.date.seconds - b.date.seconds);
 
   return (
-    <div className=" h-fit w-full px-4 mx-auto pb-4  ">
+    <div className=" h-fit w-full px-4 mx-auto   ">
       <div className="flex  flex-col">
         <LeadCreatedLine lead={lead} />
         {lead.tasks && orderedTasks && (
@@ -49,7 +50,19 @@ export const Tasks = ({lead}: {lead: Lead}) => {
             ))}
           </>
         )}
-        <CreateNextTask lead={lead} />
+        {lead.contacts && lead.contacts.length > 0 ? (
+          <CreateNextTask lead={lead} />
+        ) : (
+          <NewContactButton leadId={lead.id}>
+            <div className="flex items-start ml-[11px]">
+              <div className="border-l-[2px] mt-[1px] border-b-[2px] border-muted-foreground/20 border-dashed  w-[24px] h-5"></div>
+              <Button variant={"outline"} className="flex-grow">
+                <Icons.add className="h-4 w-4 " />
+                Add a contact
+              </Button>
+            </div>
+          </NewContactButton>
+        )}
       </div>
     </div>
   );
@@ -106,7 +119,7 @@ const TaskLine = ({
   const [copiedDescription, setCopiedDescription] = useState<boolean>(false);
 
   const copyToClipBoard = (copyFunction: any, text: string) => {
-    navigator.clipboard.writeText(task.contactPoint.value);
+    navigator.clipboard.writeText(text);
     copyFunction(true);
     setTimeout(() => {
       copyFunction(false);
@@ -206,7 +219,7 @@ const TaskLine = ({
           `}
           >
             <div className="flex bg-muted-foreground/10 w-full items-center justify-between p-2 relative">
-              <h1 className="font-bold text-lg whitespace-nowrap">
+              <h1 className="font-bold text-lg ">
                 {task.action === "followUp" && "Follow up with"}
                 {task.action === "initialContact" && "Reach out to"}{" "}
                 {task.contact.name} on{" "}
@@ -263,9 +276,11 @@ const TaskLine = ({
           </DialogHeader>
           <div className="grid gap-1">
             <h1>Contact point</h1>
-            <div className="border p-2 rounded-md flex items-center">
-              {Icon && <Icon className="h-8 w-8 mr-2" />}
-              {task.contactPoint.value}
+            <div className="border p-2 rounded-md items-center gap-4 max-w-full grid grid-cols-[32px_1fr_200px]">
+              {Icon && <Icon className="h-8 w-8 " />}
+              <div className="w-full overflow-hidden text-ellipsis whitespace-nowrap">
+                {task.contactPoint.value}
+              </div>
               <div className="flex gap-2 ml-auto">
                 {isValidURL(task.contactPoint.value) && (
                   <LinkButton

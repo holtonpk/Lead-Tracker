@@ -112,12 +112,14 @@ export type Task = {
   id: string;
   isCompleted: boolean;
   contactPoint: ContactPoint;
-  action: "initialContact" | "followUp";
+  action: TaskActions;
   contact: Contact;
   date: Timestamp;
   description?: string;
   assignedTo?: string;
 };
+
+export type TaskActions = "initialContact" | "followUp";
 
 export type Roles = [
   "CEO",

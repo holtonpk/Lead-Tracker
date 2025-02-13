@@ -169,16 +169,18 @@ const Lists = ({
                       Add to list
                     </Button>
                   </AddToList>
-                  <RemoveFromList
-                    companies={groupSelectedLeads}
-                    listId={displayedLeadList}
-                    onSuccess={() => setGroupSelectedLeads(undefined)}
-                  >
-                    <Button variant={"destructive"}>
-                      <Icons.trash />
-                      delete from list
-                    </Button>
-                  </RemoveFromList>
+                  {displayedLeadList != "1" && (
+                    <RemoveFromList
+                      companies={groupSelectedLeads}
+                      listId={displayedLeadList}
+                      onSuccess={() => setGroupSelectedLeads(undefined)}
+                    >
+                      <Button variant={"destructive"}>
+                        <Icons.trash />
+                        delete from list
+                      </Button>
+                    </RemoveFromList>
+                  )}
                 </div>
               </motion.div>
             )}

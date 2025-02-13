@@ -55,12 +55,22 @@ export const ContactDisplay = ({lead}: {lead: Lead}) => {
             </div>
           </div>
 
-          <NewContactButton text="Add a Contact" leadId={lead.id} />
+          <NewContactButton leadId={lead.id}>
+            <Button size="sm" variant={"outline"}>
+              <Icons.add />
+              Add a Contact
+            </Button>
+          </NewContactButton>
         </div>
       ) : (
         <div className="w-full flex-col flex items-center  p-2 px-4 gap-2">
           <h1 className="text-2xl font-bold">No Contacts</h1>
-          <NewContactButton text="Add a Contact" leadId={lead.id} />
+          <NewContactButton leadId={lead.id}>
+            <Button size="sm" variant={"outline"}>
+              <Icons.add />
+              Add a Contact
+            </Button>
+          </NewContactButton>
         </div>
       )}
     </div>
@@ -368,9 +378,11 @@ const PointRow = ({
 
   return (
     <div className="w-full flex items-center">
-      <div className="flex items-center flex-grow border gap-2 rounded-md shadow-sm p-2">
+      <div className="flex items-center flex-grow  border gap-2 rounded-md shadow-sm p-2 gap-4 max-w-full grid grid-cols-[32px_1fr_100px]">
         {Icon && <Icon className="h-6 w-6 text-primary" />}
-        {point.value}
+        <div className="w-full overflow-hidden text-ellipsis whitespace-nowrap">
+          {point.value}
+        </div>
 
         <Button
           onClick={() => copyToClipBoard(setCopiedContact, point.value)}

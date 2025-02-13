@@ -24,11 +24,13 @@ import {arrayUnion, doc, serverTimestamp, updateDoc} from "firebase/firestore";
 import {useState} from "react";
 
 export const NewContactButton = ({
-  text,
   leadId,
+  children,
+  onSuccess,
 }: {
-  text: string;
   leadId: string;
+  children: React.ReactNode;
+  onSuccess?: any;
 }) => {
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -126,12 +128,7 @@ export const NewContactButton = ({
 
   return (
     <Dialog>
-      <DialogTrigger asChild>
-        <Button size="sm" variant={"outline"}>
-          <Icons.add />
-          {text}
-        </Button>
-      </DialogTrigger>
+      <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>New contact</DialogTitle>
@@ -191,7 +188,7 @@ export const NewContactButton = ({
         <DialogFooter>
           <Button onClick={saveContact}>
             {isLoading && <Icons.spinner className="h-4 w-4 animate-spin" />}
-            Save changes
+            Create contact
           </Button>
         </DialogFooter>
       </DialogContent>

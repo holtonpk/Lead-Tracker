@@ -237,7 +237,7 @@ const List = ({
           setDisplayedLeadList(list.id);
           setTab("lists");
         }}
-        className="z-10 relative w-full py-2 px-2  grid-cols-[10px_1fr] gap-2 grid items-center p-1 "
+        className="z-10 relative w-full py-2 px-2  grid-cols-[10px_1fr_6px] gap-2 grid items-center p-1 "
       >
         <span
           style={{backgroundColor: selectedColor}}

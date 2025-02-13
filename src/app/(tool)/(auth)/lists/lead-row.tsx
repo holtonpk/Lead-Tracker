@@ -71,13 +71,19 @@ export const LeadRow = ({
         );
 
       if (!soonestTask?.date) {
-        return <span className="text-muted-foreground">--</span>;
+        return (
+          <span className="text-destructive bg-destructive/20 px-4 py-1 rounded-sm">
+            Missing
+          </span>
+        );
       }
 
       return formatTimeDifference(soonestTask.date as Timestamp);
     })()
   ) : (
-    <span className="text-muted-foreground">--</span>
+    <span className="text-destructive bg-destructive/20 px-4 py-1 rounded-sm">
+      Missing
+    </span>
   );
 
   return (
@@ -118,10 +124,10 @@ export const LeadRow = ({
       </div>
       <Link
         target="_blank"
-        href={lead.website}
+        href={new URL(lead.website).origin}
         className="flex items-center hover:text-blue-600 hover:underline transition-all duration-100 relative max-w-full w-fit overflow-hidden text-ellipsis "
       >
-        {new URL(lead.website).hostname}
+        {new URL(lead.website).hostname.replace(/^www\./, "")}
       </Link>
       <div>
         <div className="mx-auto relative capitalize pointer-events-none">
@@ -233,22 +239,25 @@ export const CompanyOptions = ({
             </button>
           </AddToList>
         </DropdownMenuItem>
-        <DropdownMenuItem
-          // onSelect={() => setOpenMenu(true)}
-          className=" gap-2 cursor-pointer focus:bg-primary/20"
-          asChild
-        >
-          <RemoveFromList
-            companies={[lead]}
-            listId={displayedLeadList}
-            onSuccess={() => setOpen(false)}
+        {displayedLeadList != "1" && (
+          <DropdownMenuItem
+            // onSelect={() => setOpenMenu(true)}
+            className=" gap-2 cursor-pointer focus:bg-primary/20"
+            asChild
           >
-            <button className="cursor-pointer relative flex select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0">
-              <Icons.xCircle className="h-4 w-4 " />
-              Remove from list
-            </button>
-          </RemoveFromList>
-        </DropdownMenuItem>
+            <RemoveFromList
+              companies={[lead]}
+              listId={displayedLeadList}
+              onSuccess={() => setOpen(false)}
+            >
+              <button className="cursor-pointer relative flex select-none items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-none transition-colors hover:bg-accent hover:text-accent-foreground data-[disabled]:pointer-events-none data-[disabled]:opacity-50 [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0">
+                <Icons.xCircle className="h-4 w-4 " />
+                Remove from list
+              </button>
+            </RemoveFromList>
+          </DropdownMenuItem>
+        )}
+
         <DropdownMenuItem
           asChild
           // onSelect={() => setShowDeleteDialog(true)}

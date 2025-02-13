@@ -141,8 +141,25 @@ export const Dashboard = () => {
 
   const [timeFrame, setTimeFrame] = useState<string>("today");
 
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [scrollDone, setScrollDone] = useState(false);
+
+  const onScroll = (e: React.UIEvent<HTMLDivElement>) => {
+    const scrollTop = e.currentTarget.scrollTop;
+    const isAtBottom =
+      Math.abs(
+        scrollTop + e.currentTarget.clientHeight - e.currentTarget.scrollHeight
+      ) < 16;
+    setScrollDone(isAtBottom);
+    if (scrollTop !== 0) {
+      setIsScrolled(true);
+    } else {
+      setIsScrolled(false);
+    }
+  };
+
   return (
-    <div className="flex flex-col p-6  relative">
+    <div className="flex flex-col p-6 relative">
       <div className="flex w-full justify-between">
         <h1 className="text-3xl font-bold">Dashboard</h1>
         <div className="flex gap-2 items-center ">
@@ -256,19 +273,48 @@ export const Dashboard = () => {
           </Button>
         </div>
       </div>
-      <div className="flex flex-col bg-background border p-2 flex-grow rounded-md mt-2">
-        {leadsWithTasks.length < 1 || !leadsWithTasks ? (
-          <div className="w-full h-full items-center justify-center flex text-lg">
-            {" "}
-            Nothing Scheduled
-          </div>
-        ) : (
-          <>
-            {leadsWithTasks?.flatMap((task) => (
-              <TaskRow task={task} key={task.id} />
-            ))}
-          </>
-        )}
+      <div className="w-full  h-[calc(100vh-300px)] relative">
+        <div
+          onScroll={onScroll}
+          className="flex flex-col bg-background   border p-2 flex-grow rounded-md  overflow-scroll gap-2 h-[calc(100vh-300px)] pb-4"
+        >
+          {leadsWithTasks.length < 1 || !leadsWithTasks ? (
+            <div className="w-full h-full items-center justify-center flex text-lg">
+              {" "}
+              Nothing Scheduled
+            </div>
+          ) : (
+            <>
+              {leadsWithTasks?.flatMap((task) => (
+                <TaskRow task={task} key={task.id} />
+              ))}
+            </>
+          )}
+          <AnimatePresence>
+            {isScrolled && (
+              <motion.div
+                initial={{opacity: 0}}
+                animate={{opacity: 1}}
+                exit={{opacity: 0}}
+                className="absolute pointer-events-none top-[1px]  px-[1px] overflow-hidden rounded-t-md left-0 w-full z-30 "
+              >
+                <div className="upload-row-edge-grad-top  w-full h-16 z-30 pointer-events-none"></div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+          <AnimatePresence>
+            {!scrollDone && (
+              <motion.div
+                initial={{opacity: 0}}
+                animate={{opacity: 1}}
+                exit={{opacity: 0}}
+                className="absolute pointer-events-none  bottom-[1px] px-[1px] overflow-hidden rounded-b-md left-0 w-full z-30 animate-in fade-in-0 duration-500"
+              >
+                <div className="upload-row-edge-grad-bottom  w-full h-16 z-30 pointer-events-none"></div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
     </div>
   );
@@ -276,6 +322,8 @@ export const Dashboard = () => {
 
 const TaskRow = ({task}: {task: LeadTask}) => {
   const [isCompleted, setIsComplete] = useState(task.isCompleted);
+
+  const [showScheduleNext, setShowScheduleNext] = useState(false);
 
   const toggleComplete = async () => {
     const updatedTasks = task.lead.tasks?.map((taskL) =>
@@ -285,6 +333,9 @@ const TaskRow = ({task}: {task: LeadTask}) => {
     await updateDoc(doc(db, `companies/${task.lead.id}`), {
       tasks: updatedTasks,
     });
+    if (!isCompleted) {
+      setOpen(false);
+    }
     setIsComplete(!isCompleted);
   };
 
@@ -418,9 +469,11 @@ const TaskRow = ({task}: {task: LeadTask}) => {
             </DialogHeader>
             <div className="grid gap-1">
               <h1>Contact point</h1>
-              <div className="border p-2 rounded-md flex items-center">
-                {Icon && <Icon className="h-8 w-8 mr-2" />}
-                {task.contactPoint.value}
+              <div className="border p-2 rounded-md gap-4 items-center max-w-full grid grid-cols-[32px_1fr_200px]">
+                {Icon && <Icon className="h-8 w-8 " />}
+                <div className="w-full overflow-hidden text-ellipsis whitespace-nowrap">
+                  {task.contactPoint.value}
+                </div>
                 <div className="flex gap-2 ml-auto">
                   {isValidURL(task.contactPoint.value) && (
                     <LinkButton
