@@ -1,7 +1,7 @@
 "use client";
 
 import {Icons} from "@/components/icons";
-import {ContactTypeData, Lead, Task} from "@/config/data";
+import {Contact, ContactTypeData, Lead, Task} from "@/config/data";
 import {db} from "@/config/firebase";
 import {collection, onSnapshot, query} from "firebase/firestore";
 import {AnimatePresence, motion} from "framer-motion";
@@ -15,6 +15,7 @@ import {
   TrendingUp,
   Send,
   Phone,
+  Sparkles,
 } from "lucide-react";
 import {cn, formatDate} from "@/lib/utils";
 import {
@@ -56,6 +57,7 @@ import {
 import {format} from "date-fns";
 import {doc, Timestamp, updateDoc, serverTimestamp} from "firebase/firestore";
 import {useAuth} from "@/context/user-auth";
+import {AiOutreach} from "@/app/(tool)/(auth)/ai-chats/ai-outreach";
 
 type LeadTask = Task & {lead: Lead};
 
@@ -325,6 +327,10 @@ const TaskRow = ({task}: {task: LeadTask}) => {
 
   const [showScheduleNext, setShowScheduleNext] = useState(false);
 
+  const [description, setDescription] = useState<string | undefined>(
+    task.description
+  );
+
   const toggleComplete = async () => {
     const updatedTasks = task.lead.tasks?.map((taskL) =>
       taskL.id === task.id ? {...taskL, isCompleted: !isCompleted} : taskL
@@ -503,32 +509,51 @@ const TaskRow = ({task}: {task: LeadTask}) => {
               </div>
             </div>
             <div className="grid gap-1">
-              <h1>Outreach Copy</h1>
+              <div className="flex items-center">
+                <h1>Outreach Copy</h1>
+              </div>
+
               <div className="w-full h-[200px] relative">
                 <Textarea
-                  className="h-full overflow-scroll noResize  w-full"
-                  value={task.description}
-                  onChange={(e) => updateTaskDescription(e.target.value)}
+                  className="h-full overflow-scroll noResize  w-full pb-20"
+                  value={description}
+                  onChange={(e) => {
+                    setDescription(e.target.value);
+                    updateTaskDescription(e.target.value);
+                  }}
                 />
-                <Button
-                  onClick={() =>
-                    copyToClipBoard(
-                      setCopiedDescription,
-                      task?.description || ""
-                    )
-                  }
-                  variant={"secondary"}
-                  className="absolute bottom-2 right-2"
-                >
-                  {copiedDescription ? (
-                    <>Copied</>
-                  ) : (
-                    <>
-                      <Icons.copy className="h-5 w-5 " />
-                      Copy
-                    </>
+                <div className="flex gap-2 ml-auto absolute bottom-2 right-2">
+                  {description && (
+                    <Button
+                      onClick={() =>
+                        copyToClipBoard(
+                          setCopiedDescription,
+                          task?.description || ""
+                        )
+                      }
+                      variant={"secondary"}
+                    >
+                      {copiedDescription ? (
+                        <>Copied</>
+                      ) : (
+                        <>
+                          <Icons.copy className="h-5 w-5 " />
+                          Copy
+                        </>
+                      )}
+                    </Button>
                   )}
-                </Button>
+                  <AiOutreach
+                    lead={task.lead}
+                    task={task}
+                    setDescription={setDescription}
+                  >
+                    <Button>
+                      <Sparkles className="h-5 w-5 " />
+                      Ai Generate
+                    </Button>
+                  </AiOutreach>
+                </div>
               </div>
             </div>
             <DialogFooter>

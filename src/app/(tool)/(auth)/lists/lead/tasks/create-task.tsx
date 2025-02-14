@@ -19,6 +19,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import {Sparkles} from "lucide-react";
 import {Textarea} from "@/components/ui/textarea";
 import {
   Contact,
@@ -34,6 +35,7 @@ import {cn, convertDateToTimestamp} from "@/lib/utils";
 import {format} from "date-fns";
 import {arrayUnion, doc, Timestamp, updateDoc} from "firebase/firestore";
 import {useState} from "react";
+import {AiOutreach} from "@/app/(tool)/(auth)/ai-chats/ai-outreach";
 
 export const CreateNextTask = ({lead}: {lead: Lead}) => {
   const [open, setOpen] = useState(false);
@@ -48,7 +50,7 @@ export const CreateNextTask = ({lead}: {lead: Lead}) => {
 
   const [action, setAction] = useState<TaskActions | undefined>(undefined);
   const [contact, setContact] = useState<Contact | undefined>();
-  const [outReachCopy, setOutReachCopy] = useState<string>("");
+  const [outReachCopy, setOutReachCopy] = useState<string | undefined>();
   const [isCompleted, setIsCompleted] = useState<boolean>(false);
 
   const [isLoading, setIsLoading] = useState(false);
@@ -233,11 +235,41 @@ export const CreateNextTask = ({lead}: {lead: Lead}) => {
             </div>
           )}
           {date && contact && (
-            <Textarea
-              placeholder="Outreach copy"
-              value={outReachCopy}
-              onChange={(e) => setOutReachCopy(e.target.value)}
-            />
+            <div className="grid gap-1">
+              <h1>Outreach Copy</h1>
+              <div className="w-full h-[200px] relative">
+                <Textarea
+                  placeholder="Outreach copy"
+                  className="h-full overflow-scroll noResize  w-full pb-20"
+                  value={outReachCopy}
+                  onChange={(e) => setOutReachCopy(e.target.value)}
+                />
+                <div className="flex gap-2 ml-auto absolute bottom-2 right-2">
+                  <AiOutreach
+                    lead={lead}
+                    task={{
+                      id: crypto.randomUUID(),
+                      isCompleted: isCompleted,
+                      action: action || "followUp",
+                      contact: contact,
+                      contactPoint: contactPoint || {
+                        id: "",
+                        value: "",
+                        type: "",
+                      },
+                      date: convertDateToTimestamp(date) as Timestamp,
+                      description: outReachCopy,
+                    }}
+                    setDescription={setOutReachCopy}
+                  >
+                    <Button>
+                      <Sparkles className="h-5 w-5 " />
+                      Ai Generate
+                    </Button>
+                  </AiOutreach>
+                </div>
+              </div>
+            </div>
           )}
 
           <DialogFooter>

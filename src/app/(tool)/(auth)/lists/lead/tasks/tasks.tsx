@@ -34,6 +34,16 @@ import {doc, Timestamp, updateDoc, serverTimestamp} from "firebase/firestore";
 import {useState} from "react";
 import {CreateNextTask} from "./create-task";
 import {NewContactButton} from "@/app/(tool)/(auth)/lists/lead/contact/create-contact";
+import {AiOutreach} from "@/app/(tool)/(auth)/ai-chats/ai-outreach";
+import {
+  CalendarIcon,
+  Building2,
+  TrendingDown,
+  TrendingUp,
+  Send,
+  Phone,
+  Sparkles,
+} from "lucide-react";
 
 export const Tasks = ({lead}: {lead: Lead}) => {
   const orderedTasks =
@@ -191,6 +201,10 @@ const TaskLine = ({
     }
   };
 
+  const [description, setDescription] = useState<string | undefined>(
+    task.description
+  );
+
   return (
     <div className="grid grid-cols-[24px_1fr]  gap-4 h-fit">
       <div className="flex flex-col flex-grow items-center gap-1 pt-2 h-full">
@@ -313,26 +327,45 @@ const TaskLine = ({
             <h1>Outreach Copy</h1>
             <div className="w-full h-[200px] relative">
               <Textarea
-                className="h-full overflow-scroll noResize  w-full"
-                value={task.description}
-                onChange={(e) => updateTaskDescription(e.target.value)}
+                className="h-full overflow-scroll noResize  w-full pb-20"
+                value={description}
+                onChange={(e) => {
+                  setDescription(e.target.value);
+                  updateTaskDescription(e.target.value);
+                }}
               />
-              <Button
-                onClick={() =>
-                  copyToClipBoard(setCopiedDescription, task?.description || "")
-                }
-                variant={"secondary"}
-                className="absolute bottom-2 right-2"
-              >
-                {copiedDescription ? (
-                  <>Copied</>
-                ) : (
-                  <>
-                    <Icons.copy className="h-5 w-5 " />
-                    Copy
-                  </>
+              <div className="flex gap-2 ml-auto absolute bottom-2 right-2">
+                {description && (
+                  <Button
+                    onClick={() =>
+                      copyToClipBoard(
+                        setCopiedDescription,
+                        task?.description || ""
+                      )
+                    }
+                    variant={"secondary"}
+                  >
+                    {copiedDescription ? (
+                      <>Copied</>
+                    ) : (
+                      <>
+                        <Icons.copy className="h-5 w-5 " />
+                        Copy
+                      </>
+                    )}
+                  </Button>
                 )}
-              </Button>
+                <AiOutreach
+                  lead={lead}
+                  task={task}
+                  setDescription={setDescription}
+                >
+                  <Button>
+                    <Sparkles className="h-5 w-5 " />
+                    Ai Generate
+                  </Button>
+                </AiOutreach>
+              </div>
             </div>
           </div>
           <DialogFooter>
