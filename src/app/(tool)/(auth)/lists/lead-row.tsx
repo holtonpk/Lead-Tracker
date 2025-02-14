@@ -188,16 +188,18 @@ export const LeadRow = ({
             color: source.color,
             background: hexToRgba(source.color, 0.15),
           }}
-          className="flex items-center  gap-1 text-sm rounded-[8px] px-2 w-fit  pointer-events-none relative"
+          className="items-center  gap-1 text-sm rounded-[8px] px-2 w-fit  pointer-events-none relative whitespace-nowrap max-w-full overflow-hidden text-ellipsis grid grid-cols-[6px_1fr]"
         >
           <div
             style={{
               backgroundColor: source.color,
               borderColor: source.color,
             }}
-            className="h-[5px] w-[5px] rounded-full"
+            className="h-[5px] w-[5px] rounded-full "
           />
-          {source.label}
+          <div className="max-w-full text-ellipsis overflow-hidden">
+            {source.label}
+          </div>
         </div>
       ) : (
         <p className="relative">--</p>

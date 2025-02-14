@@ -48,6 +48,7 @@ import {
 import {useEffect, useState} from "react";
 import {Controller, useForm} from "react-hook-form";
 import * as z from "zod";
+import {convertTimestampToDate} from "@/lib/utils";
 
 const Lists = ({
   isLoadingLists,
@@ -106,22 +107,63 @@ const Lists = ({
 
   const [search, setSearch] = useState("");
 
+  const [filterType, setFilterType] = useState<keyof Lead>("score");
+  const [isDesc, setIsDesc] = useState<boolean>(true);
+
   const filteredLeads = fullLeads
-    .sort((a: Lead, b: Lead) => b.score - a.score)
     .filter((lead) => {
-      // Handle search logic
       if (search.length >= 3) {
-        const searchUpper = search.toLocaleUpperCase();
-        return lead.name.toLocaleUpperCase().includes(searchUpper);
+        return lead.name
+          .toLocaleUpperCase()
+          .includes(search.toLocaleUpperCase());
+      }
+      return true; // Keep all leads if search is not active
+    })
+    .slice() // Prevents mutation
+    .sort((a: Lead, b: Lead) => {
+      if (filterType === "contacts") {
+        const aContacts =
+          a.contacts?.reduce(
+            (sum, contact) => sum + contact.contactPoints.length,
+            0
+          ) || 0;
+        const bContacts =
+          b.contacts?.reduce(
+            (sum, contact) => sum + contact.contactPoints.length,
+            0
+          ) || 0;
+        return isDesc ? bContacts - aContacts : aContacts - bContacts;
       }
 
-      return lead;
+      if (filterType === "tasks") {
+        const getEarliestTaskDate = (lead: Lead) => {
+          return (
+            lead.tasks
+              ?.filter((task) => !task.isCompleted) // Only consider incomplete tasks
+              .map((task) =>
+                convertTimestampToDate(task.date as Timestamp).getTime()
+              )
+              .sort((a, b) => a - b)[0] || 0
+          ); // Get the earliest task date (or 0 if none)
+        };
 
-      // Handle filter logic when search is not active
-      // if (filter === "all") return true;
-      // return (
-      //   postCategoryUpper === filterUpper || postTagsUpper?.includes(filterUpper)
-      // );
+        const aTaskDate = getEarliestTaskDate(a);
+        const bTaskDate = getEarliestTaskDate(b);
+
+        return isDesc ? bTaskDate - aTaskDate : aTaskDate - bTaskDate;
+      }
+
+      const aValue = a[filterType];
+      const bValue = b[filterType];
+
+      if (typeof aValue === "number" && typeof bValue === "number") {
+        return isDesc ? bValue - aValue : aValue - bValue;
+      } else if (typeof aValue === "string" && typeof bValue === "string") {
+        return isDesc
+          ? bValue.localeCompare(aValue)
+          : aValue.localeCompare(bValue);
+      }
+      return 0; // Default case if types are mixed or unknown
     });
 
   const [scoreFilter, setScoreFilter] = useState<number | undefined>();
@@ -231,34 +273,55 @@ const Lists = ({
                   <Icons.check className="h-6 w-6 text-background" />
                 )}
             </button>
-            <span className="pl-4 flex items-center gap-1 whitespace-nowrap max-w-full overflow-hidden text-ellipsis relative z-10">
-              Name
-            </span>
-            <span className="pl-4 flex items-center  gap-1 whitespace-nowrap max-w-full overflow-hidden text-ellipsis">
-              Website
-            </span>
-            <div className="pl-4  items-center  gap-1 grid grid-cols-[1fr_12px]">
-              <span className=" whitespace-nowrap  overflow-hidden text-ellipsis max-w-fit">
-                Next Action
-              </span>
-              {/* <Icons.chevronUpDown className="h-3 w-3" /> */}
-            </div>
-            <div className="pl-4  items-center  gap-1 grid grid-cols-[1fr_12px]">
-              <span className=" whitespace-nowrap  overflow-hidden text-ellipsis max-w-fit">
-                Contact Points
-              </span>
-              {/* <Icons.chevronUpDown className="h-3 w-3" /> */}
-            </div>
-            <span className="pl-4 flex items-center  gap-1 whitespace-nowrap max-w-full overflow-hidden text-ellipsis grid-cols-[1fr_12px]">
-              <span className=" whitespace-nowrap  overflow-hidden text-ellipsis max-w-fit">
-                Score
-              </span>
-              {/* <Icons.chevronUpDown className="h-3 w-3 min-w-3" /> */}
-            </span>
-            <span className="pl-4 flex items-center  gap-1 whitespace-nowrap max-w-full overflow-hidden text-ellipsis">
-              Source
-              {/* <Icons.chevronUpDown className="h-3 w-3" /> */}
-            </span>
+
+            <RowHead
+              label="Name"
+              field="name"
+              isDesc={isDesc}
+              setIsDesc={setIsDesc}
+              setFilterType={setFilterType}
+              filterType={filterType}
+            />
+            <RowHead
+              label="Website"
+              field="website"
+              isDesc={isDesc}
+              setIsDesc={setIsDesc}
+              setFilterType={setFilterType}
+              filterType={filterType}
+            />
+            <RowHead
+              label="Next Action"
+              field="tasks"
+              isDesc={isDesc}
+              setIsDesc={setIsDesc}
+              setFilterType={setFilterType}
+              filterType={filterType}
+            />
+            <RowHead
+              label="Contact Points"
+              field="contacts"
+              isDesc={isDesc}
+              setIsDesc={setIsDesc}
+              setFilterType={setFilterType}
+              filterType={filterType}
+            />
+            <RowHead
+              label="Score"
+              field="score"
+              isDesc={isDesc}
+              setIsDesc={setIsDesc}
+              setFilterType={setFilterType}
+              filterType={filterType}
+            />
+            <RowHead
+              label="Source"
+              field="source"
+              isDesc={isDesc}
+              setIsDesc={setIsDesc}
+              setFilterType={setFilterType}
+              filterType={filterType}
+            />
           </div>
           {filteredLeads.length > 0 ? (
             <div className="flex flex-col w-full divide-y rounded-b-md h-fit  max-h-[calc(100vh-48px)] overflow-scroll">
@@ -302,6 +365,43 @@ const Lists = ({
 };
 
 export default Lists;
+
+const RowHead = ({
+  label,
+  field,
+  filterType,
+  isDesc,
+  setIsDesc,
+  setFilterType,
+}: {
+  label: string;
+  field: keyof Lead;
+  filterType: keyof Lead;
+  isDesc: boolean;
+  setIsDesc: React.Dispatch<React.SetStateAction<boolean>>;
+  setFilterType: React.Dispatch<React.SetStateAction<keyof Lead>>;
+}) => {
+  return (
+    <button
+      onClick={() => {
+        setIsDesc((prev) => !prev);
+        setFilterType(field);
+      }}
+      className="pl-4 items-center gap-1 grid grid-cols-[1fr_12px]"
+    >
+      <span className="whitespace-nowrap overflow-hidden text-ellipsis max-w-fit">
+        {label}
+      </span>
+      {filterType === field && (
+        <Icons.chevronDown
+          className={`h-3 w-3 min-w-3 transition-transform duration-100 ${
+            isDesc ? "rotate-0" : "rotate-180"
+          }`}
+        />
+      )}
+    </button>
+  );
+};
 
 const ContactFormSchema = z.object({
   name: z.string().min(1, "Company name is required"),
