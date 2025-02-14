@@ -107,7 +107,7 @@ const Lists = ({
   const [search, setSearch] = useState("");
 
   const filteredLeads = fullLeads
-    .sort((a: any, b: any) => b.createdAt - a.createdAt)
+    .sort((a: Lead, b: Lead) => b.score - a.score)
     .filter((lead) => {
       // Handle search logic
       if (search.length >= 3) {
