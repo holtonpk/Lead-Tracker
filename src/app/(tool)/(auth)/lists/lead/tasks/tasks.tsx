@@ -1,3 +1,5 @@
+import {AiOutreach} from "@/app/(tool)/(auth)/ai-chats/ai-outreach";
+import {NewContactButton} from "@/app/(tool)/(auth)/lists/lead/contact/create-contact";
 import {Icons} from "@/components/icons";
 import {
   AlertDialog,
@@ -30,20 +32,11 @@ import {
   isValidURL,
 } from "@/lib/utils";
 import {format} from "date-fns";
-import {doc, Timestamp, updateDoc, serverTimestamp} from "firebase/firestore";
+import {doc, serverTimestamp, Timestamp, updateDoc} from "firebase/firestore";
+import {Sparkles} from "lucide-react";
 import {useState} from "react";
 import {CreateNextTask} from "./create-task";
-import {NewContactButton} from "@/app/(tool)/(auth)/lists/lead/contact/create-contact";
-import {AiOutreach} from "@/app/(tool)/(auth)/ai-chats/ai-outreach";
-import {
-  CalendarIcon,
-  Building2,
-  TrendingDown,
-  TrendingUp,
-  Send,
-  Phone,
-  Sparkles,
-} from "lucide-react";
+import {useAutoScroll} from "@/components/hooks/use-auto-scroll";
 
 export const Tasks = ({lead}: {lead: Lead}) => {
   const orderedTasks =
@@ -51,7 +44,7 @@ export const Tasks = ({lead}: {lead: Lead}) => {
 
   return (
     <div className=" h-fit w-full px-4 mx-auto   ">
-      <div className="flex  flex-col">
+      <div className="flex  flex-col ">
         <LeadCreatedLine lead={lead} />
         {lead.tasks && orderedTasks && (
           <>

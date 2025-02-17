@@ -81,6 +81,9 @@ body {
 .blurBack {
   backdrop-filter: blur(10px);
 }
+.blurBack2 {
+  backdrop-filter: blur(4px);
+}
 
 .noResize {
   resize: none;

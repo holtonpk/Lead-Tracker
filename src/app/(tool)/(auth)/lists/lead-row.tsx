@@ -17,6 +17,7 @@ import {
 import {RemoveFromList} from "@/app/(tool)/(auth)/lists/buttons/remove-from-list";
 import {AddToList} from "@/app/(tool)/(auth)/lists/buttons/add-to-list";
 import {DeleteLead} from "@/app/(tool)/(auth)/lists/buttons/delete-lead";
+import {Phone} from "lucide-react";
 export const LeadRow = ({
   lead,
   setSelectedLead,
@@ -72,7 +73,7 @@ export const LeadRow = ({
 
       if (!soonestTask?.date) {
         return (
-          <span className="text-destructive bg-destructive/20 px-4 py-1 rounded-sm">
+          <span className="text-yellow-400 bg-yellow-400/20 px-4 py-1 rounded-sm">
             Missing
           </span>
         );
@@ -81,7 +82,7 @@ export const LeadRow = ({
       return formatTimeDifference(soonestTask.date as Timestamp);
     })()
   ) : (
-    <span className="text-destructive bg-destructive/20 px-4 py-1 rounded-sm">
+    <span className="text-yellow-400 bg-yellow-400/20 px-4 py-1 rounded-sm">
       Missing
     </span>
   );
@@ -131,7 +132,21 @@ export const LeadRow = ({
       </Link>
       <div>
         <div className="mx-auto relative capitalize pointer-events-none">
-          {nextTask}
+          {lead?.completed ? (
+            <>
+              {lead.completed.type == "callScheduled" ? (
+                <div className="text-green-500 w-fit px-4 rounded-sm bg-green-500/20 text-center py-1 ">
+                  call scheduled
+                </div>
+              ) : (
+                <div className="text-destructive w-fit px-4 rounded-sm bg-destructive/20 text-center py-1 ">
+                  unqualified
+                </div>
+              )}
+            </>
+          ) : (
+            nextTask
+          )}
         </div>
       </div>
 

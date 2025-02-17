@@ -105,7 +105,7 @@ export const Dashboard = () => {
     if (!leads || !selectedDate) return [];
 
     return leads.reduce<LeadTask[]>((allTasks, lead) => {
-      if (!lead.tasks) return allTasks;
+      if (lead.completed || !lead.tasks) return allTasks;
 
       const tasksWithLead = lead.tasks
         .filter((task) => {

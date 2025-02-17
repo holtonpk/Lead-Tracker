@@ -36,7 +36,14 @@ export type Lead = {
   id: string;
   tasks?: Task[];
   createdBy: string;
+  completed?: Completed;
 };
+
+type Completed = {
+  type: "unqualified" | "callScheduled";
+  date: Timestamp;
+};
+
 // deelete this later ================================
 // export type LeadData = {
 //   name: string;
