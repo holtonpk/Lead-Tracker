@@ -17,6 +17,7 @@ import {
 export const ADMIN_USERS = [
   "DFXXsRtmfFUk8Vd7Y2LUS5rhY423",
   "LfoSX841aFViZB0FDqlJ5a4axWJ2",
+  "KWfkeozhuHhq95XIkuhUhLYmSci1",
 ];
 
 export type Lead = {
