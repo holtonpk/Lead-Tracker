@@ -3,6 +3,7 @@ import Navbar from "@/app/(tool)/(auth)/navbar/navbar";
 import {Dashboard} from "@/app/(tool)/(auth)/dashboard/dashboard";
 import {List as ListType} from "@/config/data";
 import Lists from "./lists/lists";
+
 import {
   addDoc,
   collection,
@@ -77,6 +78,7 @@ const Page = () => {
             setTab={setTab}
           />
         )}
+
         {tab == "dashboard" && <Dashboard />}
       </div>
     </div>

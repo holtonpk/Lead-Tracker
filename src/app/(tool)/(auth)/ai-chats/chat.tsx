@@ -67,7 +67,7 @@ export function ChatMessage({
       hasRun.current = true;
       fetchFirstMessage();
     }
-  }, []);
+  }, [messages, setMessages, isLoading]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();

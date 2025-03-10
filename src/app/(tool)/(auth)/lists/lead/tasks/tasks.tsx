@@ -37,6 +37,7 @@ import {Sparkles} from "lucide-react";
 import {useState} from "react";
 import {CreateNextTask} from "./create-task";
 import {useAutoScroll} from "@/components/hooks/use-auto-scroll";
+import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 
 export const Tasks = ({lead}: {lead: Lead}) => {
   const orderedTasks =
@@ -226,10 +227,24 @@ const TaskLine = ({
           `}
           >
             <div className="flex bg-muted-foreground/10 w-full items-center justify-between p-2 relative">
-              <h1 className="font-bold text-lg ">
+              <h1 className="font-bold text-lg flex items-center gap-1 ">
                 {task.action === "followUp" && "Follow up with"}
                 {task.action === "initialContact" && "Reach out to"}{" "}
-                {task.contact.name} on{" "}
+                <div className="flex items-center gap-1">
+                  {task.contact.photo_url && (
+                    <Avatar className="w-5 h-5 ">
+                      <AvatarImage src={task.contact.photo_url} />
+                      <AvatarFallback>
+                        {task.contact.name
+                          .split(" ")
+                          .map((name: string) => name[0])
+                          .join("")}
+                      </AvatarFallback>
+                    </Avatar>
+                  )}
+                  {task.contact.name}
+                </div>
+                on{" "}
                 {
                   ContactTypeData.find(
                     (point) => point.value === task.contactPoint.type
@@ -264,9 +279,20 @@ const TaskLine = ({
         </DialogTrigger>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>
+            <DialogTitle className="flex items-center gap-1">
               {task.action === "followUp" && "Follow up with"}
               {task.action === "initialContact" && "Reach out to"}{" "}
+              {task.contact.photo_url && (
+                <Avatar className="w-5 h-5 ">
+                  <AvatarImage src={task.contact.photo_url} />
+                  <AvatarFallback>
+                    {task.contact.name
+                      .split(" ")
+                      .map((name: string) => name[0])
+                      .join("")}
+                  </AvatarFallback>
+                </Avatar>
+              )}
               {task.contact.name} on{" "}
               {
                 ContactTypeData.find(

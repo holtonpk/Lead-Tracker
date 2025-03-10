@@ -38,6 +38,7 @@ export type Lead = {
   tasks?: Task[];
   createdBy: string;
   completed?: Completed;
+  people?: People[];
 };
 
 type Completed = {
@@ -92,6 +93,7 @@ export type Contact = {
   id: string;
   name: string;
   role: string;
+  photo_url?: string;
   contactPoints: ContactPoint[];
 };
 
@@ -294,3 +296,89 @@ export const LeadStatuses: Status[] = [
     color: "#E8000B",
   },
 ];
+
+export type People = {
+  id: string;
+  first_name: string;
+  last_name: string;
+  name: string;
+  linkedin_url: string;
+  title: string;
+  email_status: string;
+  photo_url: string;
+  twitter_url: string | null;
+  github_url: string | null;
+  facebook_url: string | null;
+  extrapolated_email_confidence: string | null;
+  headline: string;
+  email: string;
+  organization_id: string;
+  employment_history: EmploymentHistory[];
+  state: string;
+  city: string;
+  country: string;
+  organization: Organization;
+  departments: string[];
+  subdepartments: string[];
+  seniority: string;
+  functions?: string[];
+  intent_strength?: string | null;
+  show_intent?: boolean;
+  email_domain_catchall?: boolean;
+  revealed_for_current_team?: boolean;
+};
+
+type Organization = {
+  id: string;
+  name: string;
+  website_url: string;
+  linkedin_url: string;
+  twitter_url: string;
+  facebook_url: string;
+  primary_phone: {
+    number: string;
+    source: string;
+    sanitized_number: string;
+  };
+  alexa_ranking?: number;
+  phone?: string;
+  linkedin_uid?: string;
+  founded_year?: number;
+  logo_url?: string;
+  primary_domain?: string;
+  sanitized_phone?: string;
+  languages?: string[];
+  functions?: string[];
+  intent_strength?: string | null;
+  show_intent?: boolean;
+  email_domain_catchall?: boolean;
+  revealed_for_current_team?: boolean;
+};
+
+type EmploymentHistory = {
+  _id: string;
+  created_at: string | null;
+  current: boolean;
+  degree: string | null;
+  description: string | null;
+  emails: string[] | null;
+  end_date: string | null;
+  grade_level: string | null;
+  kind: string | null;
+  major: string | null;
+  organization_id: string | null;
+  organization_name: string;
+  raw_address: string | null;
+  start_date: string | null;
+  title: string;
+  updated_at: string | null;
+  id: string;
+  key: string;
+  languages?: string[];
+  phone?: string;
+  alexa_ranking?: number;
+  linkedin_uid?: string;
+  founded_year?: number;
+  logo_url?: string;
+  primary_domain?: string;
+};

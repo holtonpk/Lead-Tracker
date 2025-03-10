@@ -72,8 +72,15 @@ export const formatTimeDifference = (timestamp: Timestamp): string => {
 };
 
 export const getFaviconUrl = (url: string) => {
-  const domain = new URL(url).hostname;
-  return `https://www.google.com/s2/favicons?sz=64&domain=${domain}`;
+  try {
+    // clean the url add https if it is not there
+    const cleanedUrl = url.startsWith("http") ? url : `https://${url}`;
+
+    const domain = new URL(cleanedUrl).hostname;
+    return `https://www.google.com/s2/favicons?sz=64&domain=${domain}`;
+  } catch {
+    return "invalid";
+  }
 };
 
 export function isValidURL(url: string): boolean {

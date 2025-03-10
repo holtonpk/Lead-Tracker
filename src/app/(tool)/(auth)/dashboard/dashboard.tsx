@@ -58,6 +58,7 @@ import {format} from "date-fns";
 import {doc, Timestamp, updateDoc, serverTimestamp} from "firebase/firestore";
 import {useAuth} from "@/context/user-auth";
 import {AiOutreach} from "@/app/(tool)/(auth)/ai-chats/ai-outreach";
+import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 
 type LeadTask = Task & {lead: Lead};
 
@@ -162,10 +163,9 @@ export const Dashboard = () => {
 
   return (
     <div className="flex flex-col p-6 relative">
-      <div className="flex w-full justify-between">
-        <h1 className="text-3xl font-bold">Dashboard</h1>
-        <div className="flex gap-2 items-center ">
-          {/* {formatDate(new Date())} */}
+      {/* <div className="flex w-full justify-between"> */}
+      {/* <h1 className="text-3xl font-bold">Dashboard</h1> */}
+      {/* <div className="flex gap-2 items-center ">
           <Select value={timeFrame} onValueChange={setTimeFrame}>
             <SelectTrigger className="w-[120px] border-0 focus:ring-0 focus:ring-transparent  hover:bg-muted">
               <SelectValue placeholder="Theme" />
@@ -179,10 +179,9 @@ export const Dashboard = () => {
           <div className="p-2 bg-foreground/10 flex items-center justify-center rounded-full">
             <CalendarIcon className="h-4 w-4" />
           </div>
-        </div>
-      </div>
-      {/* <p className="mt-2">Today is its time to fucking grind</p> */}
-      <div className="grid grid-cols-3 gap-8 px-20 divide-x border-y py-4 mt-4 relative">
+        </div> */}
+      {/* </div> */}
+      {/* <div className="grid grid-cols-3 gap-8 px-20 divide-x border-y py-4 mt-4 relative">
         <div className="w-full h-fit gap-4 flex rounded-md p-3 px-6 relative">
           <div className="h-16 w-16 rounded-full bg-foreground/10 flex items-center justify-center">
             <Building2 className="h-8 w-8" />
@@ -229,8 +228,8 @@ export const Dashboard = () => {
             </div>
           </div>
         </div>
-      </div>
-      <div className="flex gap-4 items-center mt-6">
+      </div> */}
+      <div className="flex gap-4 items-center ">
         <h1 className="text-2xl font-bold flex items-center gap-2">
           <Icons.todo className="text-muted-foreground" />
           Tasks
@@ -261,7 +260,6 @@ export const Dashboard = () => {
                 mode="single"
                 selected={date}
                 onSelect={onDateChange}
-                // disabled={(date) => date < new Date()}
                 initialFocus
               />
             </PopoverContent>
@@ -278,7 +276,7 @@ export const Dashboard = () => {
       <div className="w-full  h-[calc(100vh-300px)] relative">
         <div
           onScroll={onScroll}
-          className="flex flex-col bg-background   border p-2 flex-grow rounded-md  overflow-scroll gap-2 h-[calc(100vh-300px)] pb-4"
+          className="flex flex-col bg-background   border p-2 flex-grow rounded-md  overflow-scroll gap-2 h-[calc(100vh-100px)] pb-4"
         >
           {leadsWithTasks.length < 1 || !leadsWithTasks ? (
             <div className="w-full h-full items-center justify-center flex text-lg">
@@ -292,7 +290,7 @@ export const Dashboard = () => {
               ))}
             </>
           )}
-          <AnimatePresence>
+          {/* <AnimatePresence>
             {isScrolled && (
               <motion.div
                 initial={{opacity: 0}}
@@ -303,8 +301,8 @@ export const Dashboard = () => {
                 <div className="upload-row-edge-grad-top  w-full h-16 z-30 pointer-events-none"></div>
               </motion.div>
             )}
-          </AnimatePresence>
-          <AnimatePresence>
+          </AnimatePresence> */}
+          {/* <AnimatePresence>
             {!scrollDone && (
               <motion.div
                 initial={{opacity: 0}}
@@ -315,7 +313,7 @@ export const Dashboard = () => {
                 <div className="upload-row-edge-grad-bottom  w-full h-16 z-30 pointer-events-none"></div>
               </motion.div>
             )}
-          </AnimatePresence>
+          </AnimatePresence> */}
         </div>
       </div>
     </div>
@@ -432,14 +430,27 @@ const TaskRow = ({task}: {task: LeadTask}) => {
           )}
         </AnimatePresence>
         <div
-          className={`relative z-20 pointer-events-none ${
+          className={`relative z-20 pointer-events-none flex gap-1 ${
             isCompleted ? "opacity-30" : "opacity-100"
           }`}
         >
           {task.action === "followUp" && "Follow up with"}
           {task.action === "initialContact" && "Reach out to"}{" "}
-          <span className="font-bold">{task.contact.name}</span> from{" "}
-          <span className="font-bold">{task.lead.name}</span> on{" "}
+          <div className="font-bold flex items-center gap-1">
+            {task.contact.photo_url && (
+              <Avatar className="w-5 h-5 ">
+                <AvatarImage src={task.contact.photo_url} />
+                <AvatarFallback>
+                  {task.contact.name
+                    .split(" ")
+                    .map((name: string) => name[0])
+                    .join("")}
+                </AvatarFallback>
+              </Avatar>
+            )}
+            {task.contact.name}
+          </div>{" "}
+          from <span className="font-bold">{task.lead.name}</span> on{" "}
           {
             ContactTypeData.find(
               (point) => point.value === task.contactPoint.type
@@ -454,10 +465,24 @@ const TaskRow = ({task}: {task: LeadTask}) => {
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>
+              <DialogTitle className="flex items-center gap-1">
                 {task.action === "followUp" && "Follow up with"}
                 {task.action === "initialContact" && "Reach out to"}{" "}
-                {task.contact.name} on{" "}
+                <div className="flex items-center gap-1">
+                  {task.contact.photo_url && (
+                    <Avatar className="w-5 h-5 ">
+                      <AvatarImage src={task.contact.photo_url} />
+                      <AvatarFallback>
+                        {task.contact.name
+                          .split(" ")
+                          .map((name: string) => name[0])
+                          .join("")}
+                      </AvatarFallback>
+                    </Avatar>
+                  )}
+                  {task.contact.name}
+                </div>
+                on{" "}
                 {
                   ContactTypeData.find(
                     (point) => point.value === task.contactPoint.type

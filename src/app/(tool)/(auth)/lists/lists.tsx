@@ -32,11 +32,12 @@ import {db} from "@/config/firebase";
 import {useAuth} from "@/context/user-auth";
 import {zodResolver} from "@hookform/resolvers/zod";
 import {AnimatePresence, motion} from "framer-motion";
-import {ListPlus} from "lucide-react";
+import Link from "next/link";
 import {
   addDoc,
   collection,
   doc,
+  getDocs,
   onSnapshot,
   orderBy,
   query,
@@ -49,6 +50,15 @@ import {useEffect, useState} from "react";
 import {Controller, useForm} from "react-hook-form";
 import * as z from "zod";
 import {convertTimestampToDate} from "@/lib/utils";
+import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 
 const Lists = ({
   isLoadingLists,
@@ -90,6 +100,15 @@ const Lists = ({
 
     return () => unsubscribe();
   }, [displayedLeadList]);
+  const [usersData, setUsersData] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchUsersData = async () => {
+      const users = await getDocs(collection(db, "users"));
+      setUsersData(users.docs.map((doc) => doc.data()));
+    };
+    fetchUsersData();
+  }, []);
 
   // const [filteredLeads, setFilteredLeads] = useState<Lead[]>([]);
   const [fullLeads, setFullLeads] = useState<Lead[]>([]);
@@ -205,12 +224,12 @@ const Lists = ({
                       Create list
                     </Button>
                   </CreateNewList>
-                  <AddToList companies={groupSelectedLeads}>
+                  {/* <AddToList companies={groupSelectedLeads}>
                     <Button variant={"outline"}>
                       <ListPlus className=" h-4 w-4" />
                       Add to list
                     </Button>
-                  </AddToList>
+                  </AddToList> */}
                   {displayedLeadList != "1" && (
                     <RemoveFromList
                       companies={groupSelectedLeads}
@@ -245,7 +264,7 @@ const Lists = ({
             <AddNewCompany text={"add new lead"} />
           </div>
 
-          <div className="w-full border-y relative bg-muted/30 h-10  grid grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr_36px] px-4 py-2 pl-[40px] font-bold ">
+          <div className="w-full border-y relative bg-muted/30 h-10  grid grid-cols-[200px_1fr_1fr_1fr_1fr_150px_1fr_36px] px-4 py-2 pl-[40px] font-bold ">
             <button
               onClick={() => {
                 if (
@@ -315,6 +334,14 @@ const Lists = ({
               filterType={filterType}
             />
             <RowHead
+              label="Added By"
+              field="createdBy"
+              isDesc={isDesc}
+              setIsDesc={setIsDesc}
+              setFilterType={setFilterType}
+              filterType={filterType}
+            />
+            <RowHead
               label="Source"
               field="source"
               isDesc={isDesc}
@@ -334,6 +361,7 @@ const Lists = ({
                   groupSelectedLeads={groupSelectedLeads}
                   setGroupSelectedLeads={setGroupSelectedLeads}
                   displayedLeadList={displayedLeadList}
+                  usersData={usersData}
                 />
               ))}
             </div>
@@ -404,7 +432,7 @@ const RowHead = ({
 };
 
 const ContactFormSchema = z.object({
-  name: z.string().min(1, "Company name is required"),
+  companyName: z.string().min(1, "Company name is required"),
   description: z.string().optional(),
   website: z.string().min(1, "Website is required").url("Invalid URL format"), // Ensures it's a valid URL
   linkedIn: z.string().optional(),
@@ -428,12 +456,14 @@ const AddNewCompany = ({text}: {text: string}) => {
     handleSubmit,
     control,
     reset,
+    getValues,
+    setValue,
     formState: {errors},
   } = useForm<ContactFormValue>({
     resolver: zodResolver(ContactFormSchema),
     mode: "onChange",
     defaultValues: {
-      name: "",
+      companyName: "",
       description: "",
       website: "",
       linkedIn: "",
@@ -451,17 +481,82 @@ const AddNewCompany = ({text}: {text: string}) => {
     const leadData = {
       id,
       lists: ["1"],
-      ...data,
+      name: data.companyName,
+      website: data.website,
+      linkedin: data.linkedIn,
+      description: data.description,
+      sourceId: data.sourceId,
+      score: data.score,
       createdBy: currentUser?.firstName,
       createdAt: serverTimestamp() as Timestamp,
       updatedAt: serverTimestamp() as Timestamp,
+      ...(selectedOrganization?.id && {
+        organization_id: selectedOrganization.id,
+      }),
     };
 
     await setDoc(doc(db, `companies/${id}`), leadData);
 
     setIsLoading(false);
+    setSelectedOrganization(undefined);
+    setSearchResults([]);
+    setSearchName("");
+    reset();
     setOpen(false);
   };
+
+  const [selectedOrganization, setSelectedOrganization] = useState<any>();
+
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [openSearchResults, setOpenSearchResults] = useState(false);
+
+  const [searchLoading, setSearchLoading] = useState(false);
+
+  const searchForCompany = async () => {
+    setSearchLoading(true);
+    const url = `https://api.apollo.io/api/v1/mixed_companies/search?q_organization_name=${searchName}`;
+    const options = {
+      method: "POST",
+      headers: {
+        accept: "application/json",
+        "Cache-Control": "no-cache",
+        "Content-Type": "application/json",
+        "x-api-key": "VlFpBbcKf5uUuUvubxd2Ow",
+      },
+    };
+
+    const response = await fetch(url, options);
+    const data = await response.json();
+
+    setSearchResults([...data.accounts, ...data.organizations]);
+    setOpenSearchResults(true);
+    setSearchLoading(false);
+    console.log(data);
+  };
+
+  const selectOrganization = (organization: any) => {
+    setValue("linkedIn", organization.linkedin_url);
+    setValue("website", organization.website_url);
+    setValue("companyName", organization.name);
+    setSelectedOrganization(organization);
+    setOpenSearchResults(false);
+  };
+
+  const useBlank = () => {
+    setValue("linkedIn", "");
+    setValue("website", "");
+    setValue("companyName", searchName);
+    setSelectedOrganization({
+      name: searchName,
+      logo_url: undefined,
+      linkedin_url: "",
+      website_url: "",
+      noData: true,
+    });
+    setOpenSearchResults(false);
+  };
+
+  const [searchName, setSearchName] = useState("");
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -473,88 +568,268 @@ const AddNewCompany = ({text}: {text: string}) => {
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Add a new company</DialogTitle>
-          <DialogDescription>Add a new company to the list</DialogDescription>
+          <DialogTitle>
+            {!selectedOrganization ? "Add a new company" : "Add a new company"}
+          </DialogTitle>
+          <DialogDescription>
+            {!selectedOrganization
+              ? "First search for the company you want to add. This will help us collect more data on the company. If you don't see it, add without data."
+              : "Add a new company to the list"}
+          </DialogDescription>
         </DialogHeader>
 
-        <form onSubmit={handleSubmit(SaveData)} className="grid gap-4">
-          <div className="grid gap-1">
-            <label className="font-bold">Name</label>
-            <Input placeholder="Company Name" {...register("name")} />
-            {errors.name && (
-              <p className="text-red-500 text-sm">{errors.name.message}</p>
-            )}
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="grid gap-1">
-              <label className="font-bold">Website</label>
-              <Input placeholder="Company Website" {...register("website")} />
-              {errors.website && (
-                <p className="text-red-500 text-sm">{errors.website.message}</p>
-              )}
-            </div>
-            <div className="grid gap-1">
-              <label className="font-bold">Rating</label>
-              <Controller
-                name="score"
-                control={control}
-                render={({field}) => (
-                  <Rating value={field.value} setValue={field.onChange} />
+        <form
+          onSubmit={
+            !selectedOrganization
+              ? (e) => e.preventDefault()
+              : handleSubmit(SaveData)
+          }
+          className="grid gap-4"
+        >
+          {!selectedOrganization?.noData && (
+            <div className="grid gap-1 relative ">
+              <div className="relative w-full">
+                {selectedOrganization ? (
+                  <div className="flex gap-1 items-center">
+                    <div className="flex gap-2 p-2 border rounded-sm w-full">
+                      {selectedOrganization.logo_url && (
+                        <img
+                          src={selectedOrganization.logo_url}
+                          className="w-6 h-6 rounded-sm"
+                        />
+                      )}
+                      <span>{selectedOrganization.name}</span>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <Input
+                      placeholder="Search for company"
+                      autoFocus
+                      value={searchName}
+                      onChange={(e) => setSearchName(e.target.value)}
+                      onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                          searchForCompany();
+                        }
+                      }}
+                    />
+                    {searchName &&
+                      (!searchResults || searchResults.length <= 0) && (
+                        <Button
+                          type="button"
+                          size="sm"
+                          className="absolute right-0 top-1/2 -translate-y-1/2"
+                          onClick={searchForCompany}
+                        >
+                          {searchLoading ? (
+                            <>
+                              <Icons.spinner className="h-4 w-4 animate-spin" />
+                              Searching...
+                            </>
+                          ) : (
+                            <>
+                              <Icons.search className={`h-4 w-4 `} />
+                              Search
+                            </>
+                          )}
+                        </Button>
+                      )}
+                  </>
                 )}
-              />
-            </div>
-          </div>
+                {searchResults.length > 0 && (
+                  <button
+                    type="button"
+                    onClick={() => setOpenSearchResults(!openSearchResults)}
+                    className="absolute right-2 top-1/2 -translate-y-1/2 flex gap-1 items-center"
+                  >
+                    <span className="text-sm">
+                      {openSearchResults ? "hide results" : "view results"}
+                    </span>
+                    <Icons.chevronDown
+                      className={`h-6 w-6 ${
+                        openSearchResults ? "rotate-180" : ""
+                      } transition-transform duration-100`}
+                    />
+                  </button>
+                )}
 
-          <div className="grid grid-cols-2 gap-2">
-            <div className="grid gap-1">
-              <label className="font-bold">LinkedIn</label>
-              <Input placeholder="Company LinkedIn" {...register("linkedIn")} />
+                <DropdownMenu
+                  open={openSearchResults}
+                  onOpenChange={setOpenSearchResults}
+                >
+                  <DropdownMenuTrigger asChild>
+                    <div className="w-full h-0  relative bottom-0"></div>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent
+                    align="start"
+                    sideOffset={2}
+                    className="w-[450px] max-h-fit h-[200px] overflow-scroll relative  pt-2"
+                  >
+                    {searchResults.length > 0 ? (
+                      <>
+                        <DropdownMenuLabel>Search results</DropdownMenuLabel>
+                        <DropdownMenuSeparator />
+                        <div className="flex-grow flex flex-col gap-2 h-fit">
+                          {searchResults.map((result) => (
+                            <div key={result.id} className="relative">
+                              <DropdownMenuItem
+                                typeof="button"
+                                onClick={() => {
+                                  selectOrganization(result);
+                                }}
+                                key={result.id}
+                                className="flex gap-2 items-center hover:bg-muted-foreground/20 p-2 rounded-md w-full relative z-20 cursor-pointer"
+                              >
+                                <div className="w-6 h-6 rounded-full bg-muted">
+                                  <img
+                                    src={result.logo_url}
+                                    className="w-full h-full object-cover"
+                                  />
+                                </div>
+                                <div className="flex flex-col">
+                                  <span className="font-bold">
+                                    {result.name}
+                                  </span>
+                                </div>
+                              </DropdownMenuItem>
+                              <Link
+                                target="_blank"
+                                href={result.linkedin_url}
+                                className="absolute top-1/2 -translate-y-1/2 right-0 z-40 text-[12px] hover:underline hover:text-blue-500"
+                              >
+                                Open LinkedIn
+                              </Link>
+                            </div>
+                          ))}
+                          <Button
+                            type="button"
+                            onClick={useBlank}
+                            variant={"secondary"}
+                          >
+                            {/* <Icons.add /> */}
+                            Don&apos;t see it (add without data)
+                          </Button>
+                        </div>
+                      </>
+                    ) : (
+                      <div className="flex-grow flex h-20 flex-col gap-2 items-center justify-center">
+                        <span className="text-sm">No results found</span>
+                        <Button
+                          type="button"
+                          onClick={useBlank}
+                          variant={"secondary"}
+                        >
+                          {/* <Icons.add /> */}
+                          Add without data
+                        </Button>
+                      </div>
+                    )}
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
             </div>
-            <div className="grid gap-1">
-              <label className="font-bold">Source</label>
-              <Controller
-                name="sourceId"
-                control={control}
-                render={({field}) => (
-                  <SourceSelector
-                    onChange={field.onChange}
-                    value={field.value}
+          )}
+
+          {selectedOrganization && (
+            <>
+              <div className="grid gap-1">
+                <label className="font-bold">Name</label>
+                <Input
+                  placeholder="Company Name"
+                  {...register("companyName")}
+                />
+                {errors.companyName && (
+                  <p className="text-red-500 text-sm">
+                    {errors.companyName.message}
+                  </p>
+                )}
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="grid gap-1">
+                  <label className="font-bold">Website</label>
+                  <Input
+                    placeholder="Company Website"
+                    {...register("website")}
                   />
-                )}
-              />
-              {errors.sourceId && (
-                <p className="text-red-500 text-sm">
-                  {errors.sourceId.message}
-                </p>
-              )}
-            </div>
-          </div>
+                  {errors.website && (
+                    <p className="text-red-500 text-sm">
+                      {errors.website.message}
+                    </p>
+                  )}
+                </div>
+                <div className="grid gap-1">
+                  <label className="font-bold">Rating</label>
+                  <Controller
+                    name="score"
+                    control={control}
+                    render={({field}) => (
+                      <Rating value={field.value} setValue={field.onChange} />
+                    )}
+                  />
+                </div>
+              </div>
 
-          <div className="grid gap-1">
-            <label className="font-bold">Description</label>
-            <Textarea
-              placeholder="Company Description"
-              className="noResize overflow-scroll"
-              {...register("description")}
-            />
-          </div>
+              <div className="grid grid-cols-2 gap-2">
+                <div className="grid gap-1">
+                  <label className="font-bold">LinkedIn</label>
+                  <Input
+                    placeholder="Company LinkedIn"
+                    {...register("linkedIn")}
+                  />
+                </div>
+                <div className="grid gap-1">
+                  <label className="font-bold">Source</label>
+                  <Controller
+                    name="sourceId"
+                    control={control}
+                    render={({field}) => (
+                      <SourceSelector
+                        onChange={field.onChange}
+                        value={field.value}
+                      />
+                    )}
+                  />
+                  {errors.sourceId && (
+                    <p className="text-red-500 text-sm">
+                      {errors.sourceId.message}
+                    </p>
+                  )}
+                </div>
+              </div>
 
-          <DialogFooter>
-            <Button
-              type="button"
-              onClick={() => reset()}
-              className="mr-auto"
-              variant={"secondary"}
-            >
-              Reset
-            </Button>
-            <Button type="submit" disabled={isLoading}>
-              {isLoading && (
-                <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
-              )}
-              Create
-            </Button>
-          </DialogFooter>
+              <div className="grid gap-1">
+                <label className="font-bold">Description</label>
+                <Textarea
+                  placeholder="Company Description"
+                  className="noResize overflow-scroll"
+                  {...register("description")}
+                />
+              </div>
+
+              <DialogFooter>
+                <Button
+                  type="button"
+                  onClick={() => {
+                    setSelectedOrganization(undefined);
+                    setSearchResults([]);
+                    setSearchName("");
+                    reset();
+                  }}
+                  className="mr-auto"
+                  variant={"secondary"}
+                >
+                  Reset
+                </Button>
+                <Button type="submit" disabled={isLoading}>
+                  {isLoading && (
+                    <Icons.spinner className="mr-2 h-4 w-4 animate-spin" />
+                  )}
+                  Create
+                </Button>
+              </DialogFooter>
+            </>
+          )}
         </form>
       </DialogContent>
     </Dialog>
@@ -701,4 +976,121 @@ export const Rating = ({
       ))}
     </div>
   );
+};
+
+const DummySearch = {
+  breadcrumbs: [
+    {
+      label: "Company Name",
+      signal_field_name: "q_organization_name",
+      value: "learn.xyz",
+      display_name: "learn.xyz",
+    },
+  ],
+  partial_results_only: false,
+  has_join: false,
+  disable_eu_prospecting: false,
+  partial_results_limit: 10000,
+  pagination: {
+    page: 1,
+    per_page: 10,
+    total_entries: 3,
+    total_pages: 1,
+  },
+  accounts: [
+    {
+      id: "67cd5ca62137a70015871dd9",
+      name: "Learn.xyz",
+      website_url: "http://www.learn.xyz",
+      linkedin_url: "http://www.linkedin.com/company/learn-xyz",
+      twitter_url: "https://twitter.com/learndotxyz",
+      linkedin_uid: "75049353",
+      founded_year: 2021,
+      logo_url:
+        "https://zenprospect-production.s3.amazonaws.com/uploads/pictures/67c61a4144fbf90001a1621f/picture",
+      primary_domain: "learn.xyz",
+      owned_by_organization_id: null,
+      organization_revenue_printed: null,
+      organization_revenue: 0,
+      organization_raw_address:
+        "40 boardman pl, san francisco, california 94103, us",
+      organization_city: "San Francisco",
+      organization_street_address: "40 Boardman Pl",
+      organization_state: "California",
+      organization_country: "United States",
+      organization_postal_code: "94103-4729",
+      suggest_location_enrichment: false,
+      raw_address: "40 boardman pl, san francisco, california 94103, us",
+      street_address: "40 Boardman Pl",
+      city: "San Francisco",
+      state: "California",
+      country: "United States",
+      postal_code: "94103-4729",
+      domain: "learn.xyz",
+      team_id: "67b938090531e300192f004c",
+      organization_id: "61ad0c00392e1a0001efad42",
+      account_stage_id: "67b938090531e300192f0057",
+      source: "deployment",
+      original_source: "deployment",
+      creator_id: "67b9380d0531e300192f01f6",
+      owner_id: "67b9380d0531e300192f01f6",
+      created_at: "2025-03-09T09:17:26.172Z",
+      phone_status: "no_status",
+      account_playbook_statuses: [],
+      existence_level: "full",
+      label_ids: [],
+      typed_custom_fields: {},
+      custom_field_errors: {},
+      modality: "account",
+      source_display_name: "Requested from Apollo",
+      crm_record_url: null,
+      contact_emailer_campaign_ids: [],
+      contact_campaign_status_tally: {},
+      num_contacts: 3,
+      last_activity_date: null,
+      intent_strength: null,
+      show_intent: true,
+      intent_signal_account: null,
+    },
+  ],
+  organizations: [
+    {
+      id: "5f48b21f05caff000162f5bb",
+      name: "OMR Silicon Valley Update - by Learn.xyz",
+      linkedin_url: "http://www.linkedin.com/company/omr-silicon-valley-update",
+      linkedin_uid: "65504404",
+      founded_year: 2020,
+      logo_url:
+        "https://zenprospect-production.s3.amazonaws.com/uploads/pictures/6700ef7055f6a0000198822d/picture",
+      owned_by_organization_id: null,
+      organization_revenue_printed: null,
+      organization_revenue: 0,
+      intent_strength: null,
+      show_intent: true,
+      has_intent_signal_account: false,
+      intent_signal_account: null,
+    },
+    {
+      id: "65a1994479b83c059a13bdfc",
+      name: "House of AI - by Learn.xyz",
+      linkedin_url: "http://www.linkedin.com/company/house-of-ai-by-learn-xyz",
+      linkedin_uid: "101107429",
+      logo_url:
+        "https://zenprospect-production.s3.amazonaws.com/uploads/pictures/674f017c553f1d0001241fbd/picture",
+      owned_by_organization_id: null,
+      organization_revenue_printed: null,
+      organization_revenue: 0,
+      intent_strength: null,
+      show_intent: true,
+      has_intent_signal_account: false,
+      intent_signal_account: null,
+    },
+  ],
+  model_ids: [
+    "67cd5ca62137a70015871dd9",
+    "65a1994479b83c059a13bdfc",
+    "5f48b21f05caff000162f5bb",
+  ],
+  num_fetch_result: null,
+  derived_params: null,
 };

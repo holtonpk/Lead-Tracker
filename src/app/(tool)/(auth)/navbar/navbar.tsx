@@ -1,4 +1,4 @@
-import {Icons} from "@/components/icons";
+import {Icons, CrunchBaseLogo} from "@/components/icons";
 import React, {useState} from "react";
 import {Lists} from "./lists";
 import {List as ListIcon} from "lucide-react";
@@ -82,6 +82,7 @@ const Navbar = ({
           </>
         )}
       </div>
+    
     </div>
   );
 };

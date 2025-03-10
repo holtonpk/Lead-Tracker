@@ -47,7 +47,7 @@ import {
 import {useState} from "react";
 import {AiOutreach} from "@/app/(tool)/(auth)/ai-chats/ai-outreach";
 import {number} from "zod";
-
+import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 export const CreateNextTask = ({lead}: {lead: Lead}) => {
   const [open, setOpen] = useState(false);
 
@@ -250,7 +250,18 @@ export const CreateNextTask = ({lead}: {lead: Lead}) => {
                       {lead?.contacts && lead?.contacts.length > 0 ? (
                         lead.contacts?.map((contact, i) => (
                           <SelectItem key={i} value={contact.name}>
-                            {contact.name}
+                            <div className="flex gap-2 items-center">
+                              <Avatar className="w-5 h-5 ">
+                                <AvatarImage src={contact.photo_url} />
+                                <AvatarFallback>
+                                  {contact.name
+                                    .split(" ")
+                                    .map((name) => name[0])
+                                    .join("")}
+                                </AvatarFallback>
+                              </Avatar>
+                              {contact.name}
+                            </div>
                           </SelectItem>
                         ))
                       ) : (

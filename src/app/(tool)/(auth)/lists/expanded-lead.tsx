@@ -22,7 +22,15 @@ import {motion} from "framer-motion";
 import Link from "next/link";
 import {useEffect, useState} from "react";
 import {useAutoScroll} from "@/components/hooks/use-auto-scroll";
-
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import {Input} from "@/components/ui/input";
 export const ExpandedLead = ({
   lead,
   setSelectedLeadId,
@@ -129,6 +137,7 @@ export const ExpandedLead = ({
               )}
             </div>
           </div>
+          <p className="max-w-[500px]  text-primary  text-left">{lead.id}</p>
           <p className="max-w-[500px]  text-primary  text-left">
             {lead.description}
           </p>
@@ -154,6 +163,7 @@ export const ExpandedLead = ({
             {/* <SourceSelector onChange={updateSource}></SourceSelector> */}
           </div>
           <div className="flex gap-2 absolute items-center top-4 right-4">
+            {!lead.organization_id && <AddOrganization lead={lead} />}
             <CompanyOptions lead={lead}></CompanyOptions>
           </div>
         </div>
@@ -192,6 +202,130 @@ export const ExpandedLead = ({
         </Tabs>
       </motion.div>
     </>
+  );
+};
+
+const AddOrganization = ({lead}: {lead: Lead}) => {
+  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [searchName, setSearchName] = useState(lead.name);
+
+  const [searchLoading, setSearchLoading] = useState(false);
+  const [open, setOpen] = useState(false);
+
+  const searchForCompany = async () => {
+    setSearchLoading(true);
+    const url = `https://api.apollo.io/api/v1/mixed_companies/search?q_organization_name=${searchName}`;
+    const options = {
+      method: "POST",
+      headers: {
+        accept: "application/json",
+        "Cache-Control": "no-cache",
+        "Content-Type": "application/json",
+        "x-api-key": "VlFpBbcKf5uUuUvubxd2Ow",
+      },
+    };
+
+    const response = await fetch(url, options);
+    const data = await response.json();
+
+    setSearchResults([...data.accounts, ...data.organizations]);
+    setSearchLoading(false);
+    console.log(data);
+  };
+
+  const selectOrganization = async (organization: any) => {
+    await updateDoc(doc(db, `companies/${lead.id}`), {
+      organization_id: organization.id,
+    });
+    setSearchResults([]);
+    setSearchName("");
+    setOpen(false);
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button variant={"outline"} size={"sm"}>
+          <Icons.add className="h-4 w-4 " />
+          Add Organization
+        </Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle>Search for an organization</DialogTitle>
+          <DialogDescription>
+            Search for an organization to add to this company.
+          </DialogDescription>
+        </DialogHeader>
+        <div className="relative">
+          <Input
+            placeholder="Search for company"
+            autoFocus
+            value={searchName}
+            onChange={(e) => setSearchName(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                searchForCompany();
+              }
+            }}
+          />
+          {searchName && (!searchResults || searchResults.length <= 0) && (
+            <Button
+              type="button"
+              size="sm"
+              className="absolute right-0 top-1/2 -translate-y-1/2"
+              onClick={searchForCompany}
+            >
+              {searchLoading ? (
+                <>
+                  <Icons.spinner className="h-4 w-4 animate-spin" />
+                  Searching...
+                </>
+              ) : (
+                <>
+                  <Icons.search className={`h-4 w-4 `} />
+                  Search
+                </>
+              )}
+            </Button>
+          )}
+        </div>
+        <div className="flex flex-col gap-2 max-h-[400px] overflow-scroll">
+          {searchResults.length > 0 && (
+            <div className="flex flex-col gap-2">
+              {searchResults.map((result) => (
+                <div key={result.id} className="relative">
+                  <button
+                    onClick={() => {
+                      selectOrganization(result);
+                    }}
+                    key={result.id}
+                    className="flex gap-2 items-center hover:bg-muted-foreground/20 p-2 rounded-md w-full relative z-20 "
+                  >
+                    <div className="w-6 h-6 rounded-full bg-muted">
+                      <img
+                        src={result.logo_url}
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="font-bold">{result.name}</span>
+                    </div>
+                  </button>
+                  <Link
+                    target="_blank"
+                    href={result.linkedin_url}
+                    className="absolute top-1/2 -translate-y-1/2 right-0 z-40 text-[12px] hover:underline hover:text-blue-500"
+                  >
+                    Open LinkedIn
+                  </Link>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 };
 

@@ -144,11 +144,13 @@ import {
   Download,
   Linkedin,
   ArrowRightFromLine,
+  Bot,
 } from "lucide-react";
 
 //   export type XIcon = LucideIcon;
 
 export const Icons = {
+  robot: Bot,
   closeMenu: ArrowRightFromLine,
   linkedin: Linkedin,
   download2: Download,
@@ -738,6 +740,21 @@ export function XLogo({...props}: LucideProps) {
   return (
     <svg xmlns="http://www.w3.org/2000/svg" {...props} viewBox="0 0 300 300">
       <path d="M178.57 127.15 290.27 0h-26.46l-97.03 110.38L89.34 0H0l117.13 166.93L0 300.25h26.46l102.4-116.59 81.8 116.59H300M36.01 19.54h40.65l187.13 262.13h-40.66"></path>
+    </svg>
+  );
+}
+
+export function CrunchBaseLogo({...props}: LucideProps) {
+  return (
+    <svg xmlns="http://www.w3.org/2000/svg" {...props} viewBox="0 0 32 32">
+      <path
+        fill="#fff"
+        d="M28.802 0H3.198A3.21 3.21 0 0 0 0 3.198v25.604A3.21 3.21 0 0 0 3.198 32h25.604A3.21 3.21 0 0 0 32 28.802V3.198A3.21 3.21 0 0 0 28.802 0"
+      ></path>
+      <path
+        fill="#0287d1"
+        d="M28.802 0H3.198A3.21 3.21 0 0 0 0 3.198v25.604A3.21 3.21 0 0 0 3.198 32h25.604A3.21 3.21 0 0 0 32 28.802V3.198A3.21 3.21 0 0 0 28.802 0M9.396 19.286a2.81 2.81 0 0 0 3.724-1.391h2.214c-1.38 5.651-9.698 4.651-9.698-1.167 0-5.823 8.318-6.823 9.698-1.167H13.12c-.813-1.786-3.161-2.214-4.547-.823-1.391 1.385-.964 3.734.823 4.547zm15.125 1.125a4.7 4.7 0 0 1-1.417.844 4.9 4.9 0 0 1-4.516-.51v.51h-2.016V7.161h2v5.479a5 5 0 0 1 2.401-.839h.359c4.552-.01 6.646 5.656 3.188 8.609zm-.297-3.687a2.805 2.805 0 1 1-5.609 0c.078-3.656 5.526-3.656 5.609 0"
+      ></path>
     </svg>
   );
 }

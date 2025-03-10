@@ -25,6 +25,7 @@ export const LeadRow = ({
   setGroupSelectedLeads,
   groupSelectedLeads,
   displayedLeadList,
+  usersData,
 }: {
   lead: Lead;
   setSelectedLead: React.Dispatch<React.SetStateAction<string | undefined>>;
@@ -34,6 +35,7 @@ export const LeadRow = ({
     React.SetStateAction<Lead[] | undefined>
   >;
   displayedLeadList: string;
+  usersData: any[];
 }) => {
   const isGroupSelected = groupSelectedLeads?.some((l) => l.name === lead.name);
 
@@ -87,8 +89,10 @@ export const LeadRow = ({
     </span>
   );
 
+  const creator = usersData.find((user) => user.firstName === lead.createdBy);
+
   return (
-    <div className=" p-2  relative items-center grid grid-cols-[1fr_1fr_1fr_1fr_1fr_1fr_36px] gap-4  px-4 pl-[40px] group ">
+    <div className=" p-2  relative items-center grid grid-cols-[200px_1fr_1fr_1fr_1fr_150px_1fr_36px] gap-4  px-4 pl-[40px] group ">
       <button
         onClick={toggleGroupSelected}
         className={`h-5 rounded-sm w-5  transition-all absolute left-4 top-1/2 -translate-y-1/2 z-20 border-2  flex justify-center items-center
@@ -102,7 +106,6 @@ export const LeadRow = ({
       >
         {isGroupSelected && <Icons.check className="h-6 w-6 text-background" />}
       </button>
-
       <button
         onClick={() => setSelectedLead(lead.id)}
         className={`absolute left-0 top-0 w-full h-full transition-colors duration-100
@@ -114,7 +117,7 @@ export const LeadRow = ({
           }
           `}
       ></button>
-      <div className="flex items-center gap-1 w-fit pointer-events-none relative ml-4 ">
+      <div className="flex items-center gap-1  pointer-events-none relative ml-4 w-full">
         <img
           src={getFaviconUrl(lead.website)}
           className="h-6 w-6 rounded-full border bg-white"
@@ -135,11 +138,11 @@ export const LeadRow = ({
           {lead?.completed ? (
             <>
               {lead.completed.type == "callScheduled" ? (
-                <div className="text-green-500 w-fit px-4 rounded-sm bg-green-500/20 text-center py-1 ">
+                <div className="text-green-500 w-fit px-4 rounded-sm bg-green-500/20 text-center py-1 text-sm ">
                   call scheduled
                 </div>
               ) : (
-                <div className="text-destructive w-fit px-4 rounded-sm bg-destructive/20 text-center py-1 ">
+                <div className="text-destructive w-fit px-4 rounded-sm bg-destructive/20 text-center py-1 text-sm ">
                   unqualified
                 </div>
               )}
@@ -149,7 +152,6 @@ export const LeadRow = ({
           )}
         </div>
       </div>
-
       {/* <div className="flex items-center relative w-fit pointer-events-none">
         {lead.createdAt && formatTimeDifference(lead.createdAt as Timestamp)}
       </div> */}
@@ -197,6 +199,13 @@ export const LeadRow = ({
         />
         {status?.label}
       </div> */}
+
+      <div className="relative w-full flex items-center justify-center gap-2 ">
+        <img
+          src={creator?.photoURL}
+          className="h-6 w-6 rounded-full border s"
+        />
+      </div>
       {source ? (
         <div
           style={{
@@ -309,7 +318,7 @@ export const Rating = ({id, score}: {id: string; score: number}) => {
   }, [score]);
 
   return (
-    <div className="flex items-center relative">
+    <div className="flex items-center relative justify-center">
       {[...Array(3)].map((_, index) => (
         <button
           key={index}
