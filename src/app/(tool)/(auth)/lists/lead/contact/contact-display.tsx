@@ -72,7 +72,11 @@ export const ContactDisplay = ({lead}: {lead: Lead}) => {
                 </div>
                 <div className="flex flex-col divide-y max-h-[150px] overflow-y-auto ">
                   {lead.contacts.map((contact, i) => (
-                    <ContactRow contact={contact} key={i} lead={lead} />
+                    <ContactRow
+                      contact={contact}
+                      key={contact.id}
+                      lead={lead}
+                    />
                   ))}
                 </div>
               </div>
@@ -165,7 +169,7 @@ const PersonRow = ({person, lead}: {person: People; lead: Lead}) => {
             value: person.linkedin_url,
             id: Math.random().toLocaleString(),
           },
-          person.email && {
+          person.email !== null && {
             type: "email",
             value: person.email,
             id: Math.random().toLocaleString(),
