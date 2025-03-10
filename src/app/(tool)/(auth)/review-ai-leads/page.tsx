@@ -598,7 +598,7 @@ const AddNewCompany = ({
   );
 };
 
-export const Rating = ({
+const Rating = ({
   setValue,
   value,
 }: {
