@@ -39,6 +39,7 @@ export type Lead = {
   createdBy: string;
   completed?: Completed;
   people?: People[];
+  organization_id?: string | null;
 };
 
 type Completed = {
