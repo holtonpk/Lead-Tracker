@@ -1,6 +1,7 @@
 import {AddToList} from "@/app/(tool)/(auth)/lists/buttons/add-to-list";
 import {ArrowDown} from "lucide-react";
 import {DeleteLead} from "@/app/(tool)/(auth)/lists/buttons/delete-lead";
+import {toast} from "sonner";
 import {RemoveFromList} from "@/app/(tool)/(auth)/lists/buttons/remove-from-list";
 import {ContactDisplay} from "@/app/(tool)/(auth)/lists/lead/contact/contact-display";
 import {Tasks} from "@/app/(tool)/(auth)/lists/lead/tasks/tasks";
@@ -206,31 +207,46 @@ export const ExpandedLead = ({
 };
 
 const AddOrganization = ({lead}: {lead: Lead}) => {
-  const [searchResults, setSearchResults] = useState<any[]>([]);
+  const [searchResults, setSearchResults] = useState<any[]>();
   const [searchName, setSearchName] = useState(lead.name);
 
   const [searchLoading, setSearchLoading] = useState(false);
+  const [searchError, setSearchError] = useState<string | null>(null);
   const [open, setOpen] = useState(false);
 
   const searchForCompany = async () => {
-    setSearchLoading(true);
-    const url = `https://api.apollo.io/api/v1/mixed_companies/search?q_organization_name=${searchName}`;
-    const options = {
-      method: "POST",
-      headers: {
-        accept: "application/json",
-        "Cache-Control": "no-cache",
-        "Content-Type": "application/json",
-        "x-api-key": "VlFpBbcKf5uUuUvubxd2Ow",
-      },
-    };
+    try {
+      setSearchLoading(true);
+      setSearchError(null);
 
-    const response = await fetch(url, options);
-    const data = await response.json();
+      const url = `/api/search-organization`;
+      const options = {
+        method: "POST",
+        body: JSON.stringify({organizationName: searchName}),
+      };
 
-    setSearchResults([...data.accounts, ...data.organizations]);
-    setSearchLoading(false);
-    console.log(data);
+      const response = await fetch(url, options);
+      if (!response.ok) {
+        throw new Error(`Search failed: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      setSearchResults([
+        ...(data.accounts || []),
+        ...(data.organizations || []),
+      ]);
+    } catch (error) {
+      console.error("Search error:", error);
+      const errorMessage =
+        error instanceof Error
+          ? error.message
+          : "Failed to search organization";
+      setSearchError(errorMessage);
+      setSearchResults([]);
+      toast.error(errorMessage);
+    } finally {
+      setSearchLoading(false);
+    }
   };
 
   const selectOrganization = async (organization: any) => {
@@ -291,7 +307,7 @@ const AddOrganization = ({lead}: {lead: Lead}) => {
           )}
         </div>
         <div className="flex flex-col gap-2 max-h-[400px] overflow-scroll">
-          {searchResults.length > 0 && (
+          {searchResults && searchResults.length > 0 ? (
             <div className="flex flex-col gap-2">
               {searchResults.map((result) => (
                 <div key={result.id} className="relative">
@@ -322,6 +338,14 @@ const AddOrganization = ({lead}: {lead: Lead}) => {
                 </div>
               ))}
             </div>
+          ) : (
+            <>
+              {searchResults && searchResults.length === 0 && (
+                <div className="flex flex-col gap-2">
+                  <p>No results found</p>
+                </div>
+              )}
+            </>
           )}
         </div>
       </DialogContent>

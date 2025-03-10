@@ -8,6 +8,7 @@ import {LeadRow} from "@/app/(tool)/(auth)/lists/lead-row";
 import Navbar from "@/app/(tool)/(auth)/navbar/navbar";
 import {Icons} from "@/components/icons";
 import {Button} from "@/components/ui/button";
+import {toast} from "sonner";
 
 import {
   Dialog,
@@ -514,24 +515,30 @@ const AddNewCompany = ({text}: {text: string}) => {
 
   const searchForCompany = async () => {
     setSearchLoading(true);
-    const url = `https://api.apollo.io/api/v1/mixed_companies/search?q_organization_name=${searchName}`;
-    const options = {
-      method: "POST",
-      headers: {
-        accept: "application/json",
-        "Cache-Control": "no-cache",
-        "Content-Type": "application/json",
-        "x-api-key": "VlFpBbcKf5uUuUvubxd2Ow",
-      },
-    };
+    try {
+      const url = `/api/search-organization`;
+      const options = {
+        method: "POST",
+        body: JSON.stringify({organizationName: searchName}),
+      };
 
-    const response = await fetch(url, options);
-    const data = await response.json();
+      const response = await fetch(url, options);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const data = await response.json();
 
-    setSearchResults([...data.accounts, ...data.organizations]);
-    setOpenSearchResults(true);
-    setSearchLoading(false);
-    console.log(data);
+      setSearchResults([
+        ...(data.accounts || []),
+        ...(data.organizations || []),
+      ]);
+      setOpenSearchResults(true);
+    } catch (error) {
+      console.log("Failed to search for company:", error);
+      toast.error("Failed to search for company. Please try again.");
+    } finally {
+      setSearchLoading(false);
+    }
   };
 
   const selectOrganization = (organization: any) => {

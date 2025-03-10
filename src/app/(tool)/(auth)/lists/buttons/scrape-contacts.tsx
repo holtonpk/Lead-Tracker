@@ -35,15 +35,10 @@ export const ScrapeContacts = ({
         ? `organization_ids[]=${lead.organization_id}`
         : `q_organization_domains_list[]=${cleanedUrl}`;
 
-      const url = `https://api.apollo.io/api/v1/mixed_people/search?per_page=100&${queryString}`;
+      const url = `/api/search-people`;
       const options = {
         method: "POST",
-        headers: {
-          accept: "application/json",
-          "Cache-Control": "no-cache",
-          "Content-Type": "application/json",
-          "x-api-key": process.env.NEXT_PUBLIC_APOLLO_API_KEY || "",
-        },
+        body: JSON.stringify({queryString}),
       };
       const response = await fetch(url, options);
       const data = await response.json();

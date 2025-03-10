@@ -553,20 +553,11 @@ const PointRow = ({
   const unlockEmail = async () => {
     try {
       setUnlocking(true);
-      const url = `https://api.apollo.io/api/v1/people/match?id=${contact.id}&reveal_personal_emails=true&reveal_phone_number=false`;
+      const url = `/api/unlock-email`;
       const options = {
         method: "POST",
-        headers: {
-          accept: "application/json",
-          "Cache-Control": "no-cache",
-          "Content-Type": "application/json",
-          "x-api-key": process.env.NEXT_PUBLIC_APOLLO_API_KEY || "",
-        },
+        body: JSON.stringify({id: contact.id}),
       };
-
-      if (!process.env.NEXT_PUBLIC_APOLLO_API_KEY) {
-        throw new Error("API key is not configured");
-      }
 
       const response = await fetch(url, options);
       if (!response.ok) {
