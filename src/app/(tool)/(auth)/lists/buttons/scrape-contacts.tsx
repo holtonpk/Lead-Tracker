@@ -31,7 +31,7 @@ export const ScrapeContacts = ({
   const scrapeContacts = async () => {
     setLoading(true);
     try {
-      const queryString = lead.organization_id
+      const queryString = lead?.organization_id
         ? `organization_ids[]=${lead.organization_id}`
         : `q_organization_domains_list[]=${cleanedUrl}`;
 
