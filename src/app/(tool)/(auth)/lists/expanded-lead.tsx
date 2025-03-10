@@ -102,13 +102,24 @@ export const ExpandedLead = ({
         className="fixed top-0 left-0 w-screen h-screen bg-black/40  z-30 blurBack2"
       ></motion.button>
       <motion.div
-        initial={{translateX: "100%"}}
-        animate={{translateX: 0}}
-        exit={{translateX: "100%"}}
-        transition={{duration: 0.3}}
-        className=" fixed h-screen    border rounded-md  z-40 w-[80vw] max-w-[600px] right-2 top-2  sp-2 flex flex-col  bg-background"
+        initial={{
+          opacity: 0,
+          scale: 0.95,
+        }}
+        animate={{
+          opacity: 1,
+          scale: 1,
+          x: 0,
+          y: 0,
+        }}
+        exit={{
+          opacity: 0,
+          scale: 0.95,
+        }}
+        transition={{duration: 0.1}}
+        className=" fixed h-[calc(100vh-32px)] overflow-hidden  border rounded-xl grid grid-rows-[175px_1fr]  z-40 w-[80vw] max-w-[600px] right-2 top-4  p-2  bg-background"
       >
-        <div className="flex flex-col items-start max-h-[175px] h-fit p-4 overflow-hidden  rounded-md   px-4 gap-2 w-full ">
+        <div className="flex flex-col items-start h-[175px]   p-4 overflow-scroll  rounded-md   px-4 gap-2 w-full ">
           <div className="flex gap-2 items-center">
             <img
               src={getFaviconUrl(lead.website)}
@@ -171,9 +182,9 @@ export const ExpandedLead = ({
 
         <Tabs
           defaultValue="flow"
-          className="w-full overflow-hiddens max-h-[calc(100vh-191px)]  mt-4 pb-4 "
+          className="w-full overflow-hidden  h-[calc(100vh-245px)]  mt-4 pb-4 "
         >
-          <TabsList className="grid grid-cols-3 w-[98%] mx-auto bg-muted-foreground/20 border  ">
+          <TabsList className="grid grid-cols-3 w-[98%] mx-auto bg-muted-foreground/20 border  h-10  ">
             <TabsTrigger value="flow">Tasks</TabsTrigger>
             <TabsTrigger value="contacts">Contacts</TabsTrigger>
             <TabsTrigger value="notes">Notes</TabsTrigger>
@@ -181,14 +192,20 @@ export const ExpandedLead = ({
           <TabsContent
             ref={scrollRef}
             value="flow"
-            className={`overflow-scroll max-h-[calc(100vh-200px)]  pb-16 relative  bg-background rounded-md `}
+            className={`overflow-scroll h-[calc(100vh-293px)]  relative  bg-background rounded-md `}
           >
             <Tasks lead={lead} />
           </TabsContent>
-          <TabsContent value="contacts">
+          <TabsContent
+            value="contacts"
+            className="h-[calc(100vh-293px)]  overflow-scroll"
+          >
             <ContactDisplay lead={lead} />
           </TabsContent>
-          <TabsContent value="notes">
+          <TabsContent
+            value="notes"
+            className="h-[calc(100vh-293px)] overflow-scroll"
+          >
             <div className="flex flex-col   px-2">
               <Textarea
                 value={notes}

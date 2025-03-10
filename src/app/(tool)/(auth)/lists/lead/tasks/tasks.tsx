@@ -227,7 +227,7 @@ const TaskLine = ({
           `}
           >
             <div className="flex bg-muted-foreground/10 w-full items-center justify-between p-2 relative">
-              <h1 className="font-bold text-lg flex items-center gap-1 ">
+              <h1 className="font-bold text-lg flex items-center gap-1  whitespace-nowrap flex-wrap">
                 {task.action === "followUp" && "Follow up with"}
                 {task.action === "initialContact" && "Reach out to"}{" "}
                 <div className="flex items-center gap-1">

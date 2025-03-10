@@ -157,24 +157,24 @@ export const LeadRow = ({
           }
           `}
       ></button>
-      <div className="flex items-center gap-1  pointer-events-none relative ml-4 w-full">
+      <div className="flex items-center gap-2  pointer-events-none relative ml-4 w-full">
         <img
           src={getFaviconUrl(lead.website)}
-          className="h-6 w-6 rounded-full border bg-white"
+          className="h-6 w-6 rounded-sm border bg-white shadow-sm"
         />
-        <h1 className="font-bold  text-primary whitespace-nowrap max-w-full overflow-hidden text-ellipsis ">
+        <h1 className="text-primary whitespace-nowrap max-w-full overflow-hidden text-ellipsis ">
           {lead.name}
         </h1>
       </div>
       <Link
         target="_blank"
         href={new URL(lead.website).origin}
-        className="flex items-center hover:text-blue-600 hover:underline transition-all duration-100 relative max-w-full w-fit overflow-hidden text-ellipsis "
+        className="flex text-sm items-center hover:text-blue-600 hover:underline transition-all duration-100 relative max-w-full w-fit overflow-hidden text-ellipsis "
       >
         {new URL(lead.website).hostname.replace(/^www\./, "")}
       </Link>
       <div>
-        <div className="mx-auto relative capitalize pointer-events-none">
+        <div className="mx-auto relative capitalize pointer-events-none text-sm">
           {lead?.completed ? (
             <>
               {lead.completed.type == "callScheduled" ? (

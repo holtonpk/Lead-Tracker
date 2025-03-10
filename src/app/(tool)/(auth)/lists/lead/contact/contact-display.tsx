@@ -46,16 +46,20 @@ import {LinkButton} from "@/components/ui/link";
 import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 export const ContactDisplay = ({lead}: {lead: Lead}) => {
   return (
-    <div className="flex flex-col   px-2">
+    <div className="flex flex-col h-[calc(100vh-293px)]  px-2">
       {(lead.contacts && lead.contacts.length > 0) ||
       (lead.people && lead.people.length > 0) ? (
-        <div className="flex flex-col gap-2 rounded-md ">
-          <div className="flex flex-col gap-1">
+        <div className="  rounded-md  grid h-full grid-rows-2">
+          <div className="flex flex-col gap-1 h-full ">
             <div className="flex justify-between">
               <h1 className="pl-2 font-bold ">Contacts</h1>
               {lead.contacts && lead.contacts.length > 0 && (
                 <NewContactButton leadId={lead.id}>
-                  <Button size={"sm"} className="h-6">
+                  <Button
+                    size={"sm"}
+                    className="h-6 gap-1"
+                    variant={"secondary"}
+                  >
                     <Icons.add />
                     add a contact
                   </Button>
@@ -98,10 +102,10 @@ export const ContactDisplay = ({lead}: {lead: Lead}) => {
             )}
           </div>
 
-          <div className="flex flex-col gap-1">
+          <div className="flex flex-col gap-1 h-full">
             <h1 className="pl-2 font-bold text-primary">People</h1>
             {lead.people && lead.people.length > 0 ? (
-              <div className="flex flex-col divide-y max-h-[250px] overflow-y-auto border rounded-md">
+              <div className="flex flex-col divide-y  overflow-y-auto border rounded-md">
                 {lead.people?.map((person, i) => (
                   <PersonRow person={person} key={i} lead={lead} />
                 ))}

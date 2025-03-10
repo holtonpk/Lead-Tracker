@@ -200,6 +200,25 @@ const Lists = ({
             {LeadLists.find((list) => list.id == displayedLeadList)?.name} (
             {fullLeads.length})
           </h1>
+          <div className="border border-t-0 shadow-lg rounded-b-md absolute items-center gap-4 top-0 right-0 p-3 py-2 rounded-r-none text-sm flex">
+            <h1 className="font-bold text-lg">Scoring Criteria 👉</h1>
+            <div className="flex gap-1 items-center">
+              <Icons.star className="h-4 w-4 fill-blue-300 text-blue-500" />
+              <p className="text-muted-foreground">
+                Shown interest in social media
+              </p>
+            </div>
+            <div className="flex gap-1 items-center">
+              <Icons.star className="h-4 w-4 fill-blue-300 text-blue-500" />
+              <p className="text-muted-foreground">
+                Underperforming on social media
+              </p>
+            </div>
+            <div className="flex gap-1 items-center">
+              <Icons.star className="h-4 w-4 fill-blue-300 text-blue-500" />
+              <p className="text-muted-foreground">Good niche for shortform</p>
+            </div>
+          </div>
           <AnimatePresence>
             {groupSelectedLeads && groupSelectedLeads?.length > 0 && (
               <motion.div
