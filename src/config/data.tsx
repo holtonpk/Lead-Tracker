@@ -334,14 +334,14 @@ type Organization = {
   name: string;
   website_url: string;
   linkedin_url: string;
-  twitter_url: string;
-  facebook_url: string;
+  twitter_url: string | null;
+  facebook_url: string | null;
   primary_phone: {
     number: string;
     source: string;
     sanitized_number: string;
   };
-  alexa_ranking?: number;
+  alexa_ranking?: number | null;
   phone?: string;
   linkedin_uid?: string;
   founded_year?: number;
