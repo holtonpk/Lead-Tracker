@@ -39,8 +39,16 @@ export const ExpandedLead = ({
   lead: Lead;
   setSelectedLeadId: React.Dispatch<React.SetStateAction<string | undefined>>;
 }) => {
+  const cleanedWebsite = (website: string) => {
+    if (!website) return "";
+    if (website.startsWith("http")) {
+      return website;
+    }
+    return `https://${website}`;
+  };
+
   const getFaviconUrl = (url: string) => {
-    const domain = new URL(url).hostname;
+    const domain = new URL(cleanedWebsite(url)).hostname;
     return `https://www.google.com/s2/favicons?sz=64&domain=${domain}`;
   };
 
@@ -132,7 +140,7 @@ export const ExpandedLead = ({
               </h1>
               -
               <Link
-                href={new URL(lead.website).origin}
+                href={new URL(cleanedWebsite(lead.website)).origin}
                 target="_blank"
                 className=" rounded-[4px] hover:opacity-80 h-fit"
               >

@@ -129,7 +129,17 @@ export const LeadRow = ({
     </span>
   );
 
-  const creator = usersData.find((user) => user.firstName === lead.createdBy);
+  const creator = usersData.find(
+    (user) => user.firstName === lead.createdBy || user.uid === lead.createdBy
+  );
+
+  const cleanedWebsite = (website: string) => {
+    if (!website) return "";
+    if (website.startsWith("http")) {
+      return website;
+    }
+    return `https://${website}`;
+  };
 
   return (
     <div className=" p-2  relative items-center grid grid-cols-[200px_1fr_1fr_1fr_1fr_150px_1fr_36px] gap-4  px-4 pl-[40px] group ">
@@ -168,10 +178,10 @@ export const LeadRow = ({
       </div>
       <Link
         target="_blank"
-        href={new URL(lead.website).origin}
+        href={new URL(cleanedWebsite(lead.website)).origin}
         className="flex text-sm items-center hover:text-blue-600 hover:underline transition-all duration-100 relative max-w-full w-fit overflow-hidden text-ellipsis "
       >
-        {new URL(lead.website).hostname.replace(/^www\./, "")}
+        {new URL(cleanedWebsite(lead.website)).hostname}
       </Link>
       <div>
         <div className="mx-auto relative capitalize pointer-events-none text-sm">

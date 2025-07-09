@@ -89,7 +89,13 @@ const LeadCreatedLine = ({lead}: {lead: Lead}) => {
       >
         <div className="flex  w-full items-center justify-between p-2">
           <h1 className="font-bold text-lg whitespace-nowrap">
-            Lead added {lead.createdBy && `by ${lead.createdBy}`}
+            Lead added{" "}
+            {lead.createdBy &&
+              `by ${
+                lead.createdBy == "DFXXsRtmfFUk8Vd7Y2LUS5rhY423"
+                  ? "Patrick"
+                  : lead.createdBy
+              }`}
           </h1>
           <h2 className="text-muted-foreground whitespace-nowrap text-sm">
             {formatTimeDifference(lead.createdAt as Timestamp)}

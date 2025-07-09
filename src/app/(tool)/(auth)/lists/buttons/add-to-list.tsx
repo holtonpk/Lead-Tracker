@@ -42,36 +42,6 @@ export const AddToList = ({
 
   const [allLists, setAllLists] = useState<List[]>([]);
 
-  //   const createList = async () => {
-  //     setIsLoading(true);
-
-  //     const listId = Math.random().toString(36).substring(2, 15);
-  //     const docRef = doc(db, "lists", listId);
-  //     await setDoc(docRef, {
-  //       name: name,
-  //       description: description,
-  //       id: listId,
-  //       color: selectedColor,
-  //     });
-
-  //     selectedCompanies.forEach(async (companyId) => {
-  //       const docRef = doc(db, "companies", companyId);
-  //       const docSnap = await getDoc(docRef);
-  //       const data = docSnap.data();
-  //       const listOld = (data && data.lists) || [];
-  //       await setDoc(
-  //         docRef,
-  //         {
-  //           lists: [...listOld, listId],
-  //         },
-  //         {merge: true}
-  //       );
-  //     });
-
-  //     setIsLoading(false);
-  //     setOpen(false);
-  //   };
-
   const toggleSelected = (listId: string) => {
     if (selectedLists.includes(listId)) {
       setSelectedLists(selectedLists.filter((id) => id !== listId));
