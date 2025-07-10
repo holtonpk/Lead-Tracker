@@ -73,17 +73,17 @@ export const AiOutreach = ({
   const {currentUser} = useAuth()!;
 
   const message = `This message will be sent to ${
-    task.contact.name
-  }, who is the ${task.contact.role} at ${lead.name}. My name is ${
+    task.contact?.name
+  }, who is the ${task.contact?.role} at ${lead.name}. My name is ${
     currentUser?.firstName
   } I'm a co founder of Ripple Media. ${
     lead.notes
       ? `Here are some key notes on how I can assist their company: **${lead.notes}**. Please incorporate these insights into the message.`
       : ""
   } ${
-    lead.tasks?.some((task) => task.description)
+    lead.tasks?.some((task) => task.outreachCopy)
       ? `Additionally, use the tone and structure of my past outreach messages as a reference. Here are previous messages I've sent: **${lead.tasks
-          .map((task) => task.description)
+          .map((task) => task.outreachCopy)
           .join("; ")}**.`
       : ""
   } Generate a professional and engaging message that aligns with my previous communication style while emphasizing the value I can bring to ${
@@ -118,7 +118,7 @@ export const AiOutreach = ({
       <DialogContent className="p-0 h-[90vh] gap-0">
         <DialogHeader className="h-12 flex justify-center px-4 ">
           <DialogTitle>
-            Ai generate outreach copy for {task.contact.name}
+            Ai generate outreach copy for {task.contact?.name}
           </DialogTitle>
         </DialogHeader>
         {/* <Textarea value={input} /> */}
