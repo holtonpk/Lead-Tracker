@@ -69,6 +69,31 @@ export const CreateNextTask = ({lead}: {lead: Lead}) => {
   const [daysAlpha, setDaysAlpha] = useState(5);
   const [repeat, setRepeat] = useState(5);
 
+  const saveResearch = async () => {
+    if (!date || !action) {
+      toast({
+        title: "A field is empty",
+        description: "Please fill in all required fields",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      setIsLoading(true);
+      const docRef = doc(db, "companies", lead.id);
+      await updateDoc(docRef, {
+        tasks: arrayUnion({
+          id: crypto.randomUUID(),
+          isCompleted: false,
+          action: "research",
+          date: convertDateToTimestamp(date) as Timestamp,
+        }),
+      });
+    } catch (error) {
+      console.error("Error saving research:", error);
+    }
+  };
   const saveStep = async () => {
     if (!date || !action || !contact || !contactPoint) {
       toast({
@@ -207,7 +232,7 @@ export const CreateNextTask = ({lead}: {lead: Lead}) => {
                 Add the next step for this lead
               </DialogDescription>
             </DialogHeader>
-            <div className="flex  gap-2 items-center">
+            <div className="flex gap-2 items-center">
               <Select
                 onValueChange={(value) =>
                   setAction(value as "initialContact" | "followUp")
@@ -217,6 +242,10 @@ export const CreateNextTask = ({lead}: {lead: Lead}) => {
                   <SelectValue placeholder="Select an action" />
                 </SelectTrigger>
                 <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>Start</SelectLabel>
+                    <SelectItem value="research">Do Research</SelectItem>
+                  </SelectGroup>
                   <SelectGroup>
                     <SelectLabel>Active</SelectLabel>
                     <SelectItem value="initialContact">
@@ -340,6 +369,32 @@ export const CreateNextTask = ({lead}: {lead: Lead}) => {
                 </Popover>
               </div>
             )}
+
+            {action == "research" && (
+              <Popover>
+                <PopoverTrigger asChild>
+                  <Button
+                    variant={"outline"}
+                    className={cn(
+                      "w-[200px] pl-3 text-left font-normal",
+                      !date && "text-muted-foreground"
+                    )}
+                  >
+                    {date ? format(date, "PPP") : <span>Pick a date</span>}
+                    <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-auto p-0" align="start">
+                  <Calendar
+                    mode="single"
+                    selected={date}
+                    onSelect={setDate}
+                    // disabled={(date) => date < new Date()}
+                    initialFocus
+                  />
+                </PopoverContent>
+              </Popover>
+            )}
             {date && contact && (
               <div className="grid gap-1">
                 <h1 className="font-bold">Outreach Copy</h1>
@@ -351,7 +406,7 @@ export const CreateNextTask = ({lead}: {lead: Lead}) => {
                     onChange={(e) => setOutReachCopy(e.target.value)}
                   />
                   <div className="flex gap-2 ml-auto absolute bottom-2 right-2">
-                    <AiOutreach
+                    {/* <AiOutreach
                       lead={lead}
                       task={{
                         id: crypto.randomUUID(),
@@ -372,7 +427,7 @@ export const CreateNextTask = ({lead}: {lead: Lead}) => {
                         <Sparkles className="h-5 w-5 " />
                         Ai Generate
                       </Button>
-                    </AiOutreach>
+                    </AiOutreach> */}
                   </div>
                 </div>
                 {action == "initialContact" && (
@@ -427,12 +482,23 @@ export const CreateNextTask = ({lead}: {lead: Lead}) => {
                   </Button>
                 </>
               )}
-              {action && action != "followUp" && action != "initialContact" && (
-                <Button onClick={setAsComplete}>
+              {action &&
+                action != "followUp" &&
+                action != "initialContact" &&
+                action != "research" && (
+                  <Button onClick={setAsComplete}>
+                    {isLoading && (
+                      <Icons.spinner className="h-4 w-4 animate-spin" />
+                    )}
+                    Close Lead
+                  </Button>
+                )}
+              {action == "research" && date && (
+                <Button onClick={saveResearch}>
                   {isLoading && (
                     <Icons.spinner className="h-4 w-4 animate-spin" />
                   )}
-                  Close Lead
+                  Save Research
                 </Button>
               )}
             </DialogFooter>

@@ -119,18 +119,30 @@ export type ContactPoint = {
 //   contactCopy: string;
 // };
 
+export type taskTemplate = {
+  leads: Lead[];
+  cadence: taskCadence;
+  tasks: Task[];
+};
+
+type taskCadence = {
+  startDate: Date;
+  followUpTime: number;
+  followUpVolume: number;
+};
+
 export type Task = {
   id: string;
   isCompleted: boolean;
-  contactPoint: ContactPoint;
   action: TaskActions;
-  contact: Contact;
+  contact?: Contact;
   date: Timestamp;
-  description?: string;
+  outreachCopy?: string;
   assignedTo?: string;
+  taskCadence?: taskCadence;
 };
 
-export type TaskActions = "initialContact" | "followUp";
+export type TaskActions = "research" | "initialContact" | "followUp";
 
 export type Roles = [
   "CEO",

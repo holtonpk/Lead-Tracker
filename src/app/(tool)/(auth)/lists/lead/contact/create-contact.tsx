@@ -30,7 +30,7 @@ export const NewContactButton = ({
 }: {
   leadId: string;
   children: React.ReactNode;
-  onSuccess?: any;
+  onSuccess?: (contact: Contact) => void;
 }) => {
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -53,17 +53,19 @@ export const NewContactButton = ({
       // Batch the Firestore operations
       const docRef = doc(db, "companies", leadId);
 
+      const newContact = {
+        id: crypto.randomUUID(), // Add unique ID for future updates/deletions
+        name,
+        role,
+        contactPoints: contactPoints.filter(
+          (point) => point.value && point.type && point.id
+        ), // Only save valid contact points
+      } as Contact;
+
       // Use arrayUnion instead of fetching + updating
       await updateDoc(docRef, {
         updatedAt: serverTimestamp(),
-        contacts: arrayUnion({
-          id: crypto.randomUUID(), // Add unique ID for future updates/deletions
-          name,
-          role,
-          contactPoints: contactPoints.filter(
-            (point) => point.value && point.type && point.id
-          ), // Only save valid contact points
-        } as Contact),
+        contacts: arrayUnion(newContact),
       });
 
       toast({
@@ -78,6 +80,7 @@ export const NewContactButton = ({
         {value: "", type: "", id: Math.random().toLocaleString()},
       ]);
       setOpen(false);
+      onSuccess?.(newContact);
     } catch (error) {
       console.error("Error saving contact:", error);
       toast({

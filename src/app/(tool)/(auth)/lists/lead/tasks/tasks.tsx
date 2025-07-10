@@ -41,7 +41,15 @@ import {Avatar, AvatarFallback, AvatarImage} from "@/components/ui/avatar";
 
 export const Tasks = ({lead}: {lead: Lead}) => {
   const orderedTasks =
-    lead.tasks && lead.tasks.sort((a, b) => a.date.seconds - b.date.seconds);
+    lead.tasks &&
+    lead.tasks.sort((a, b) => {
+      // Research tasks should come first
+      if (a.action === "research" && b.action !== "research") return -1;
+      if (a.action !== "research" && b.action === "research") return 1;
+
+      // Then sort by date
+      return a.date.seconds - b.date.seconds;
+    });
 
   return (
     <div className=" h-fit w-full px-4 mx-auto   ">
@@ -121,10 +129,6 @@ const TaskLine = ({
     convertTimestampToDate(task.date as Timestamp)
   );
 
-  const Icon = ContactTypeData.find(
-    (point) => point.value == task.contactPoint.type
-  )?.icon;
-
   const [copiedContact, setCopiedContact] = useState<boolean>(false);
   const [copiedDescription, setCopiedDescription] = useState<boolean>(false);
 
@@ -202,8 +206,21 @@ const TaskLine = ({
   };
 
   const [description, setDescription] = useState<string | undefined>(
-    task.description
+    task.outreachCopy
   );
+
+  const cleanedWebsite = (website: string) => {
+    if (!website) return "";
+    if (website.startsWith("http")) {
+      return website;
+    }
+    return `https://${website}`;
+  };
+
+  const getFaviconUrl = (url: string) => {
+    const domain = new URL(cleanedWebsite(url)).hostname;
+    return `https://www.google.com/s2/favicons?sz=64&domain=${domain}`;
+  };
 
   return (
     <div className="grid grid-cols-[24px_1fr]  gap-4 h-fit">
@@ -228,7 +245,7 @@ const TaskLine = ({
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogTrigger asChild>
           <span
-            className={`flex flex-col justify-between mb-6 w-full relative items-center border  rounded-md group hover:opacity-100 hover:shadow-lg cursor-pointer transition-all duration-300 
+            className={`flex flex-col justify-between  mb-6 w-full relative items-center border  rounded-md group hover:opacity-100 hover:shadow-lg cursor-pointer transition-all duration-300 
           ${!task.isCompleted && "opacity-60"}
           `}
           >
@@ -236,26 +253,49 @@ const TaskLine = ({
               <h1 className="font-bold text-lg flex items-center gap-1  whitespace-nowrap flex-wrap">
                 {task.action === "followUp" && "Follow up with"}
                 {task.action === "initialContact" && "Reach out to"}{" "}
-                <div className="flex items-center gap-1">
-                  {task.contact.photo_url && (
+                {task.action === "research" && "Do Research on"}{" "}
+                {task.action === "research" && (
+                  <div className="font-bold flex items-center gap-1">
                     <Avatar className="w-5 h-5 ">
-                      <AvatarImage src={task.contact.photo_url} />
-                      <AvatarFallback>
-                        {task.contact.name
-                          .split(" ")
-                          .map((name: string) => name[0])
-                          .join("")}
-                      </AvatarFallback>
+                      <AvatarImage src={getFaviconUrl(lead.website)} />
                     </Avatar>
-                  )}
-                  {task.contact.name}
-                </div>
-                on{" "}
-                {
-                  ContactTypeData.find(
-                    (point) => point.value === task.contactPoint.type
-                  )?.label
-                }
+                    {lead.name}
+                  </div>
+                )}
+                {task.action !== "research" && task.contact && (
+                  <>
+                    <div className="flex items-center gap-1">
+                      {task.contact.photo_url && (
+                        <Avatar className="w-5 h-5 ">
+                          <AvatarImage src={task.contact.photo_url} />
+                          <AvatarFallback>
+                            {task.contact.name
+                              .split(" ")
+                              .map((name: string) => name[0])
+                              .join("")}
+                          </AvatarFallback>
+                        </Avatar>
+                      )}
+                      {task.contact.name}
+                    </div>
+                    on{" "}
+                    {task.contact &&
+                      task.contact.contactPoints.map((point, index) => {
+                        return (
+                          <span key={point.id}>
+                            {
+                              ContactTypeData.find(
+                                (type) => type.value === point.type
+                              )?.label
+                            }
+                            {task.contact &&
+                              index < task.contact.contactPoints.length - 1 &&
+                              " & "}
+                          </span>
+                        );
+                      })}
+                  </>
+                )}
               </h1>
               <div className="flex gap-1 items-center ">
                 <h2
@@ -278,8 +318,8 @@ const TaskLine = ({
                 </h2>
               </div>
             </div>
-            {task.description && (
-              <span className="w-full p-2">{task.description}</span>
+            {task.outreachCopy && (
+              <span className="w-full p-2">{task.outreachCopy}</span>
             )}
           </span>
         </DialogTrigger>
@@ -288,66 +328,108 @@ const TaskLine = ({
             <DialogTitle className="flex items-center gap-1">
               {task.action === "followUp" && "Follow up with"}
               {task.action === "initialContact" && "Reach out to"}{" "}
-              {task.contact.photo_url && (
-                <Avatar className="w-5 h-5 ">
-                  <AvatarImage src={task.contact.photo_url} />
-                  <AvatarFallback>
-                    {task.contact.name
-                      .split(" ")
-                      .map((name: string) => name[0])
-                      .join("")}
-                  </AvatarFallback>
-                </Avatar>
+              {task.action === "research" && "Do Research on"}{" "}
+              {task.action === "research" && (
+                <div className="font-bold flex items-center gap-1">
+                  <Avatar className="w-5 h-5 ">
+                    <AvatarImage src={getFaviconUrl(lead.website)} />
+                  </Avatar>
+                  {lead.name}
+                </div>
               )}
-              {task.contact.name} on{" "}
-              {
-                ContactTypeData.find(
-                  (point) => point.value === task.contactPoint.type
-                )?.label
-              }
+              {task.action !== "research" && task.contact && (
+                <>
+                  {task.contact.photo_url && (
+                    <Avatar className="w-5 h-5 ">
+                      <AvatarImage src={task.contact.photo_url} />
+                      <AvatarFallback>
+                        {task.contact.name
+                          .split(" ")
+                          .map((name: string) => name[0])
+                          .join("")}
+                      </AvatarFallback>
+                    </Avatar>
+                  )}
+                  {task.contact.name} on{" "}
+                  {task.contact.contactPoints.map((point, index) => {
+                    return (
+                      <span key={point.id}>
+                        {
+                          ContactTypeData.find(
+                            (type) => type.value === point.type
+                          )?.label
+                        }
+                        {task.contact &&
+                          index < task.contact.contactPoints.length - 1 &&
+                          " & "}
+                      </span>
+                    );
+                  })}
+                </>
+              )}
             </DialogTitle>
             <DialogDescription>
-              {task.contact.name} is the {task.contact.role} of {lead.name} you
-              need to {task.action === "followUp" && "Follow up with them"}
-              {task.action === "initialContact" && "Reach out to them"} by{" "}
-              {format(convertTimestampToDate(task.date as Timestamp), "PPP")}
+              {task.action === "research" && `Do Research on ${lead.name}`}{" "}
+              {task.action !== "research" && task.contact && (
+                <>
+                  {task.contact.name} is the {task.contact.role} of {lead.name}{" "}
+                  you need to{" "}
+                  {task.action === "followUp" && "Follow up with them"}
+                  {task.action === "initialContact" &&
+                    "Reach out to them"} by{" "}
+                  {format(
+                    convertTimestampToDate(task.date as Timestamp),
+                    "PPP"
+                  )}
+                </>
+              )}
             </DialogDescription>
           </DialogHeader>
-          <div className="grid gap-1">
-            <h1>Contact point</h1>
-            <div className="border p-2 rounded-md items-center gap-4 max-w-full grid grid-cols-[32px_1fr_200px]">
-              {Icon && <Icon className="h-8 w-8 " />}
-              <div className="w-full overflow-hidden text-ellipsis whitespace-nowrap">
-                {task.contactPoint.value}
-              </div>
-              <div className="flex gap-2 ml-auto">
-                {isValidURL(task.contactPoint.value) && (
-                  <LinkButton
-                    href={task.contactPoint.value}
-                    target="_blank"
-                    variant={"secondary"}
-                  >
-                    Open link
-                  </LinkButton>
-                )}
-                <Button
-                  onClick={() =>
-                    copyToClipBoard(setCopiedContact, task.contactPoint.value)
-                  }
-                  variant={"secondary"}
-                >
-                  {copiedContact ? (
-                    <>Copied</>
-                  ) : (
-                    <>
-                      <Icons.copy className="h-5 w-5 " />
-                      Copy
-                    </>
-                  )}
-                </Button>
-              </div>
+          {task.action !== "research" && task.contact && (
+            <div className="grid gap-1">
+              <h1>Contact point</h1>
+              {task.contact.contactPoints.map((point, index) => {
+                const Icon = ContactTypeData.find(
+                  (type) => type.value === point.type
+                )?.icon;
+                return (
+                  <div key={point.id}>
+                    {Icon && <Icon className="h-8 w-8 " />}
+                    <div className="w-full overflow-hidden text-ellipsis whitespace-nowrap">
+                      {point.value}
+                    </div>
+                    <div className="flex gap-2 ml-auto">
+                      {isValidURL(point.value) && (
+                        <LinkButton
+                          href={point.value}
+                          target="_blank"
+                          variant={"secondary"}
+                        >
+                          Open link
+                        </LinkButton>
+                      )}
+                      <Button
+                        onClick={() =>
+                          copyToClipBoard(setCopiedContact, point.value)
+                        }
+                        variant={"secondary"}
+                      >
+                        {copiedContact ? (
+                          <>Copied</>
+                        ) : (
+                          <>
+                            <Icons.copy className="h-5 w-5 " />
+                            Copy
+                          </>
+                        )}
+                      </Button>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-          </div>
+          )}
+
           <div className="grid gap-1">
             <h1>Outreach Copy</h1>
             <div className="w-full h-[200px] relative">
@@ -365,7 +447,7 @@ const TaskLine = ({
                     onClick={() =>
                       copyToClipBoard(
                         setCopiedDescription,
-                        task?.description || ""
+                        task?.outreachCopy || ""
                       )
                     }
                     variant={"secondary"}

@@ -9,6 +9,7 @@ import Navbar from "@/app/(tool)/(auth)/navbar/navbar";
 import {Icons} from "@/components/icons";
 import {Button} from "@/components/ui/button";
 import {toast} from "sonner";
+import {Calendar} from "@/components/ui/calendar";
 
 import {
   Dialog,
@@ -50,8 +51,10 @@ import {
 import {useEffect, useState} from "react";
 import {Controller, useForm} from "react-hook-form";
 import * as z from "zod";
-import {convertTimestampToDate} from "@/lib/utils";
+import {cn, convertTimestampToDate} from "@/lib/utils";
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
+import {CalendarIcon} from "lucide-react";
+import {format} from "date-fns";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -60,6 +63,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
+import {ConfigOutreach} from "./config-outreach";
 
 const Lists = ({
   isLoadingLists,
@@ -281,7 +285,10 @@ const Lists = ({
                 selectedStatus={selectedStatus}
                 setSelectedStatus={setSelectedStatus}
               /> */}
-            <AddNewCompany text={"add new lead"} />
+            <div className="flex ml-auto gap-4">
+              <ConfigOutreach leads={fullLeads} />
+              <AddNewCompany text={"add new lead"} />
+            </div>
           </div>
 
           <div className="w-full border-y relative bg-muted/30 h-10  grid grid-cols-[200px_1fr_1fr_1fr_1fr_150px_1fr_36px] px-4 py-2 pl-[40px] font-bold ">

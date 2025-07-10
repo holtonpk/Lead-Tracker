@@ -225,7 +225,7 @@ const PersonRow = ({person, lead}: {person: People; lead: Lead}) => {
   );
 };
 
-const ContactRow = ({contact, lead}: {contact: Contact; lead: Lead}) => {
+export const ContactRow = ({contact, lead}: {contact: Contact; lead: Lead}) => {
   const [open, setOpen] = useState(false);
 
   const [newContactPoints, setNewContactPoints] = useState<
@@ -324,8 +324,13 @@ const ContactRow = ({contact, lead}: {contact: Contact; lead: Lead}) => {
     const updatedContacts =
       lead.contacts?.filter((contactL) => contactL.id !== contact.id) || [];
 
+    // Filter out tasks associated with this contact
+    const updatedTasks =
+      lead.tasks?.filter((task) => task.contact?.id !== contact.id) || [];
+
     await updateDoc(doc(db, `companies/${lead.id}`), {
       contacts: updatedContacts,
+      tasks: updatedTasks,
     });
     setOpen(false);
   };
