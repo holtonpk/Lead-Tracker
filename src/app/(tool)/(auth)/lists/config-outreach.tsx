@@ -70,8 +70,8 @@ export const ConfigOutreach = ({leads}: {leads: Lead[]}) => {
     }
 
     const templates: taskTemplate[] = [];
-    let currentDate = new Date(startDate);
-    let remainingLeads = [...leadsWithoutTasks];
+    const currentDate = new Date(startDate);
+    const remainingLeads = [...leadsWithoutTasks];
 
     while (remainingLeads.length > 0) {
       const groupLeads = remainingLeads.splice(0, leadsPerDay);
