@@ -72,9 +72,13 @@ export const AiOutreach = ({
 }) => {
   const {currentUser} = useAuth()!;
 
-  const message = `This message will be sent to ${
-    task.contact?.name
-  }, who is the ${task.contact?.role} at ${lead.name}. My name is ${
+  const contact = lead.contacts?.find(
+    (contact) => contact.id === task.contact
+  ) as Contact;
+
+  const message = `This message will be sent to ${contact.name}, who is the ${
+    contact.role
+  } at ${lead.name}. My name is ${
     currentUser?.firstName
   } I'm a co founder of Ripple Media. ${
     lead.notes
@@ -118,7 +122,7 @@ export const AiOutreach = ({
       <DialogContent className="p-0 h-[90vh] gap-0">
         <DialogHeader className="h-12 flex justify-center px-4 ">
           <DialogTitle>
-            Ai generate outreach copy for {task.contact?.name}
+            Ai generate outreach copy for {contact.name}
           </DialogTitle>
         </DialogHeader>
         {/* <Textarea value={input} /> */}
