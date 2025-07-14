@@ -1,6 +1,6 @@
 "use client";
 import {useState} from "react";
-import {Lead, Task, taskTemplate} from "@/config/data";
+import {Contact, Lead, Task, taskTemplate} from "@/config/data";
 import {
   Dialog,
   DialogContent,
@@ -85,6 +85,7 @@ export const ConfigOutreach = ({leads}: {leads: Lead[]}) => {
           isCompleted: false,
           action: "research",
           date: convertDateToTimestamp(currentDate) as Timestamp,
+          contact: "",
           leadId: lead.id, // Add leadId to identify which lead this task belongs to
           taskCadence: {
             startDate: new Date(currentDate),
@@ -101,7 +102,7 @@ export const ConfigOutreach = ({leads}: {leads: Lead[]}) => {
               id: crypto.randomUUID(),
               isCompleted: false,
               action: "initialContact",
-              contact: contact,
+              contact: contact.id,
               date: convertDateToTimestamp(currentDate) as Timestamp,
               leadId: lead.id, // Add leadId to identify which lead this task belongs to
               taskCadence: {
@@ -133,7 +134,7 @@ export const ConfigOutreach = ({leads}: {leads: Lead[]}) => {
                 id: crypto.randomUUID(),
                 isCompleted: false,
                 action: "followUp",
-                contact: contact,
+                contact: contact.id,
                 date: convertDateToTimestamp(followUpDate) as Timestamp,
                 leadId: lead.id, // Add leadId to identify which lead this task belongs to
                 taskCadence: {
@@ -383,6 +384,10 @@ export const ConfigOutreach = ({leads}: {leads: Lead[]}) => {
 const TaskGroup = ({taskGroup}: {taskGroup: taskTemplate}) => {
   const [isOpen, setIsOpen] = useState(false);
 
+  const contact = taskGroup.leads[0].contacts?.find(
+    (contact) => contact.id === taskGroup.tasks[0].contact
+  ) as Contact;
+
   return (
     <div className="border rounded-lg mb-2">
       <button
@@ -447,9 +452,9 @@ const TaskGroup = ({taskGroup}: {taskGroup: taskTemplate}) => {
                     "MMM d"
                   )}
                 </span>
-                {task.contact && (
+                {contact && (
                   <span className="text-muted-foreground">
-                    • {task.contact.name}
+                    • {contact.name}
                   </span>
                 )}
                 {/* Show contact point type if available */}
