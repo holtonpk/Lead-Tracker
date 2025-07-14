@@ -31,7 +31,7 @@ export const DeleteLead = ({
 
   const handleDeleteCompany = async () => {
     setIsLoading(true);
-    await deleteDoc(doc(db, `companies/${leadId}`));
+    await deleteDoc(doc(db, `companies-fixed/${leadId}`));
     onSuccess?.();
     setIsLoading(false);
     setOpen(false);

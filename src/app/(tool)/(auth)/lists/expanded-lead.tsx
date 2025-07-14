@@ -62,7 +62,7 @@ export const ExpandedLead = ({
   };
 
   const updateSource = async (value: string) => {
-    await updateDoc(doc(db, `companies/${lead.id}`), {
+    await updateDoc(doc(db, `companies-fixed/${lead.id}`), {
       sourceId: value,
     });
   };
@@ -82,7 +82,7 @@ export const ExpandedLead = ({
   }, []);
 
   const updatedCreatedBy = async (name: string) => {
-    await updateDoc(doc(db, `companies/${lead.id}`), {
+    await updateDoc(doc(db, `companies-fixed/${lead.id}`), {
       createdBy: name,
     });
     setSelectedLeadId(undefined);
@@ -275,7 +275,7 @@ const AddOrganization = ({lead}: {lead: Lead}) => {
   };
 
   const selectOrganization = async (organization: any) => {
-    await updateDoc(doc(db, `companies/${lead.id}`), {
+    await updateDoc(doc(db, `companies-fixed/${lead.id}`), {
       organization_id: organization.id,
     });
     setSearchResults([]);

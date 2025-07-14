@@ -387,7 +387,7 @@ const PointRow = ({
         value: unlockedEmail,
       };
 
-      await updateDoc(doc(db, `companies/${lead.id}`), {
+      await updateDoc(doc(db, `companies-fixed/${lead.id}`), {
         contacts: updatedContacts,
       });
     } catch (error) {

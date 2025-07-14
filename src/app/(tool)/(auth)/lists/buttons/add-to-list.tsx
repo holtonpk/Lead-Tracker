@@ -74,7 +74,7 @@ export const AddToList = ({
       for (const list of selectedLists) {
         // Ensure companies exist and map over them
         const updatePromises = (companies ?? []).map(async (company) => {
-          await updateDoc(doc(db, `companies/${company.id}`), {
+          await updateDoc(doc(db, `companies-fixed/${company.id}`), {
             lists: arrayUnion(list), // Add id to the "lists" array
           });
         });

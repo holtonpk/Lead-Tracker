@@ -522,7 +522,7 @@ const AddNewCompany = ({text}: {text: string}) => {
       }),
     };
 
-    await setDoc(doc(db, `companies/${id}`), leadData);
+    await setDoc(doc(db, `companies-fixed/${id}`), leadData);
 
     setIsLoading(false);
     setSelectedOrganization(undefined);

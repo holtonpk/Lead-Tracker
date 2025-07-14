@@ -444,7 +444,7 @@ const ContactDisplay = ({contact, lead}: {contact: Contact; lead: Lead}) => {
       };
 
       // Update the document
-      await updateDoc(doc(db, `companies/${lead.id}`), {
+      await updateDoc(doc(db, `companies-fixed/${lead.id}`), {
         contacts: updatedContacts,
       });
       setNewContactPoints(undefined);
@@ -474,7 +474,7 @@ const ContactDisplay = ({contact, lead}: {contact: Contact; lead: Lead}) => {
       };
 
       // Update the document
-      await updateDoc(doc(db, `companies/${lead.id}`), {
+      await updateDoc(doc(db, `companies-fixed/${lead.id}`), {
         contacts: updatedContacts,
       });
     }
@@ -485,7 +485,7 @@ const ContactDisplay = ({contact, lead}: {contact: Contact; lead: Lead}) => {
     const updatedContacts =
       lead.contacts?.filter((contactL) => contactL.id !== contact.id) || [];
 
-    await updateDoc(doc(db, `companies/${lead.id}`), {
+    await updateDoc(doc(db, `companies-fixed/${lead.id}`), {
       contacts: updatedContacts,
     });
     setOpen(false);
@@ -737,7 +737,7 @@ const PointRow = ({
         value: unlockedEmail,
       };
 
-      await updateDoc(doc(db, `companies/${lead.id}`), {
+      await updateDoc(doc(db, `companies-fixed/${lead.id}`), {
         contacts: updatedContacts,
       });
     } catch (error) {

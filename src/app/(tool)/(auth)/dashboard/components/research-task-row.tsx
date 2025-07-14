@@ -45,7 +45,7 @@ export const ResearchTaskRow = ({task}: ResearchTaskRowProps) => {
       taskL.id === task.id ? {...taskL, isCompleted: !isCompleted} : taskL
     );
 
-    await updateDoc(doc(db, `companies/${task.lead.id}`), {
+    await updateDoc(doc(db, `companies-fixed/${task.lead.id}`), {
       tasks: updatedTasks,
     });
     if (!isCompleted) {
