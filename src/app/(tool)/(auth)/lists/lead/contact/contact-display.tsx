@@ -326,7 +326,7 @@ export const ContactRow = ({contact, lead}: {contact: Contact; lead: Lead}) => {
 
     // Filter out tasks associated with this contact
     const updatedTasks =
-      lead.tasks?.filter((task) => task.contact?.id !== contact.id) || [];
+      lead.tasks?.filter((task) => task.contact !== contact.id) || [];
 
     await updateDoc(doc(db, `companies/${lead.id}`), {
       contacts: updatedContacts,
