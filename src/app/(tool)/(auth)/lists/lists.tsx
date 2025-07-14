@@ -88,7 +88,7 @@ const Lists = ({
 
   useEffect(() => {
     const clientIdeaDataQuery = query(
-      collection(db, "companies"),
+      collection(db, "companies-fixed"),
       where("lists", "array-contains", displayedLeadList)
     );
 

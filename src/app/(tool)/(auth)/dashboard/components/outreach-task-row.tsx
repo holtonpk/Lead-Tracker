@@ -1,7 +1,7 @@
 "use client";
 
 import {Icons} from "@/components/icons";
-import {ContactTypeData, Lead, Task} from "@/config/data";
+import {Contact, ContactTypeData, Lead, Task} from "@/config/data";
 import {db} from "@/config/firebase";
 import {AnimatePresence, motion} from "framer-motion";
 import React, {useState} from "react";
@@ -63,6 +63,10 @@ export const OutreachTaskRow = ({task}: OutreachTaskRowProps) => {
     return `https://www.google.com/s2/favicons?sz=64&domain=${domain}`;
   };
 
+  const contact = task.lead.contacts?.find(
+    (contact) => contact.id === task.contact
+  ) as Contact;
+
   return (
     <div className="flex items-center gap-1">
       <div className="flex justify-start items-center bg-background overflow-hidden text-primary p-3 px-4 rounded-lg border relative gap-4 w-full hover:bg-muted-foreground/20 transition-colors duration-300">
@@ -98,18 +102,18 @@ export const OutreachTaskRow = ({task}: OutreachTaskRowProps) => {
           {task.contact && (
             <>
               <div className="font-bold flex items-center gap-1">
-                {task.contact.photo_url && (
+                {contact.photo_url && (
                   <Avatar className="w-5 h-5 border">
-                    <AvatarImage src={task.contact.photo_url} />
+                    <AvatarImage src={contact.photo_url} />
                     <AvatarFallback>
-                      {task.contact.name
+                      {contact.name
                         .split(" ")
                         .map((name: string) => name[0])
                         .join("")}
                     </AvatarFallback>
                   </Avatar>
                 )}
-                {task.contact.name}
+                {contact.name}
               </div>{" "}
               from{" "}
               <span className="font-bold flex items-center gap-1">
@@ -126,8 +130,8 @@ export const OutreachTaskRow = ({task}: OutreachTaskRowProps) => {
                 {task.lead.name}
               </span>{" "}
               on{" "}
-              {task.contact &&
-                task.contact.contactPoints.map((point, index) => {
+              {contact &&
+                contact.contactPoints.map((point, index) => {
                   return (
                     <div key={point.id}>
                       {
@@ -135,7 +139,7 @@ export const OutreachTaskRow = ({task}: OutreachTaskRowProps) => {
                           (type) => type.value === point.type
                         )?.label
                       }
-                      {index < (task.contact?.contactPoints.length || 0) - 1 &&
+                      {index < (contact?.contactPoints.length || 0) - 1 &&
                         " & "}
                     </div>
                   );

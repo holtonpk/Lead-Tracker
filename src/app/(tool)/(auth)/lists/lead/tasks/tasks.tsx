@@ -24,7 +24,7 @@ import {
 } from "@/components/ui/dialog";
 import {LinkButton} from "@/components/ui/link";
 import {Textarea} from "@/components/ui/textarea";
-import {ContactTypeData, Lead, Task} from "@/config/data";
+import {Contact, ContactTypeData, Lead, Task} from "@/config/data";
 import {db} from "@/config/firebase";
 import {
   convertTimestampToDate,
@@ -222,6 +222,10 @@ const TaskLine = ({
     return `https://www.google.com/s2/favicons?sz=64&domain=${domain}`;
   };
 
+  const contact = lead.contacts?.find(
+    (contact) => contact.id === task.contact
+  ) as Contact;
+
   return (
     <div className="grid grid-cols-[24px_1fr]  gap-4 h-fit">
       <div className="flex flex-col flex-grow items-center gap-1 pt-2 h-full">
@@ -265,22 +269,22 @@ const TaskLine = ({
                 {task.action !== "research" && task.contact && (
                   <>
                     <div className="flex items-center gap-1">
-                      {task.contact.photo_url && (
+                      {contact.photo_url && (
                         <Avatar className="w-5 h-5 ">
-                          <AvatarImage src={task.contact.photo_url} />
+                          <AvatarImage src={contact.photo_url} />
                           <AvatarFallback>
-                            {task.contact.name
+                            {contact.name
                               .split(" ")
                               .map((name: string) => name[0])
                               .join("")}
                           </AvatarFallback>
                         </Avatar>
                       )}
-                      {task.contact.name}
+                      {contact.name}
                     </div>
                     on{" "}
-                    {task.contact &&
-                      task.contact.contactPoints.map((point, index) => {
+                    {contact &&
+                      contact.contactPoints.map((point, index) => {
                         return (
                           <span key={point.id}>
                             {
@@ -288,8 +292,8 @@ const TaskLine = ({
                                 (type) => type.value === point.type
                               )?.label
                             }
-                            {task.contact &&
-                              index < task.contact.contactPoints.length - 1 &&
+                            {contact &&
+                              index < contact.contactPoints.length - 1 &&
                               " & "}
                           </span>
                         );
@@ -339,19 +343,19 @@ const TaskLine = ({
               )}
               {task.action !== "research" && task.contact && (
                 <>
-                  {task.contact.photo_url && (
+                  {contact.photo_url && (
                     <Avatar className="w-5 h-5 ">
-                      <AvatarImage src={task.contact.photo_url} />
+                      <AvatarImage src={contact.photo_url} />
                       <AvatarFallback>
-                        {task.contact.name
+                        {contact.name
                           .split(" ")
                           .map((name: string) => name[0])
                           .join("")}
                       </AvatarFallback>
                     </Avatar>
                   )}
-                  {task.contact.name} on{" "}
-                  {task.contact.contactPoints.map((point, index) => {
+                  {contact.name} on{" "}
+                  {contact.contactPoints.map((point, index) => {
                     return (
                       <span key={point.id}>
                         {
@@ -359,8 +363,8 @@ const TaskLine = ({
                             (type) => type.value === point.type
                           )?.label
                         }
-                        {task.contact &&
-                          index < task.contact.contactPoints.length - 1 &&
+                        {contact &&
+                          index < contact.contactPoints.length - 1 &&
                           " & "}
                       </span>
                     );
@@ -372,9 +376,8 @@ const TaskLine = ({
               {task.action === "research" && `Do Research on ${lead.name}`}{" "}
               {task.action !== "research" && task.contact && (
                 <>
-                  {task.contact.name} is the {task.contact.role} of {lead.name}{" "}
-                  you need to{" "}
-                  {task.action === "followUp" && "Follow up with them"}
+                  {contact.name} is the {contact.role} of {lead.name} you need
+                  to {task.action === "followUp" && "Follow up with them"}
                   {task.action === "initialContact" &&
                     "Reach out to them"} by{" "}
                   {format(
@@ -388,7 +391,7 @@ const TaskLine = ({
           {task.action !== "research" && task.contact && (
             <div className="grid gap-1">
               <h1>Contact point</h1>
-              {task.contact.contactPoints.map((point, index) => {
+              {contact.contactPoints.map((point, index) => {
                 const Icon = ContactTypeData.find(
                   (type) => type.value === point.type
                 )?.icon;

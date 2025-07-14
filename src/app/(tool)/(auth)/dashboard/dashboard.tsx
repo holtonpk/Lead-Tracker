@@ -3,7 +3,13 @@
 import {Icons} from "@/components/icons";
 import {Lead, Task} from "@/config/data";
 import {db} from "@/config/firebase";
-import {collection, onSnapshot, query} from "firebase/firestore";
+import {
+  addDoc,
+  collection,
+  getDocs,
+  onSnapshot,
+  query,
+} from "firebase/firestore";
 import React, {useEffect, useState} from "react";
 import {Calendar} from "@/components/ui/calendar";
 import {Popover, PopoverContent, PopoverTrigger} from "@/components/ui/popover";
@@ -23,7 +29,7 @@ export const Dashboard = () => {
   const [leads, setLeads] = useState<Lead[]>();
 
   useEffect(() => {
-    const clientIdeaDataQuery = query(collection(db, "companies"));
+    const clientIdeaDataQuery = query(collection(db, "companies-fixed"));
     const unsubscribe = onSnapshot(clientIdeaDataQuery, (querySnapshot) => {
       const leadsData: Lead[] = [];
       querySnapshot.forEach((doc) => {
@@ -136,8 +142,44 @@ export const Dashboard = () => {
     }
   };
 
+  // const fixData = async () => {
+  //   // get data from /companies
+  //   // get all that have the value "qd8vimrcyht" in lists
+  //   let data: any[] = [];
+  //   const companies = await getDocs(collection(db, "companies"));
+  //   companies.forEach(async (company) => {
+  //     const companyData = company.data();
+  //     if (companyData.lists.includes("qd8vimrcyht")) {
+  //       const newTasks = companyData.tasks.map((task: Task) => {
+  //         if (task.contact && task.contact.id) {
+  //           return {
+  //             ...task,
+  //             contact: task.contact.id,
+  //           };
+  //         }
+  //         return {
+  //           ...task,
+  //         };
+  //       });
+
+  //       data.push({
+  //         ...companyData,
+  //         tasks: newTasks,
+  //       });
+  //     }
+  //   });
+  //   // console.log("dd", data);
+  //   // now make a new collection called "companies-fixed" and add the data to it
+  //   const companiesFixed = collection(db, "companies-fixed");
+  //   data.forEach(async (company) => {
+  //     await addDoc(companiesFixed, company);
+  //   });
+  //   console.log("done");
+  // };
+
   return (
     <div className="flex flex-col p-6 relative">
+      {/* <Button onClick={fixData}>Fix Data</Button> */}
       <div className="flex gap-4 items-center ">
         <h1 className="text-2xl font-bold flex items-center gap-2">
           <Icons.todo className="text-muted-foreground" />

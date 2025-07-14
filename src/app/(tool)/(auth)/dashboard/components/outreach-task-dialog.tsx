@@ -1,10 +1,18 @@
 "use client";
 
 import {Icons} from "@/components/icons";
-import {ContactTypeData, Lead, Task} from "@/config/data";
+import {
+  ContactTypeData,
+  Lead,
+  Task,
+  Contact,
+  ContactPoint,
+} from "@/config/data";
 import {db} from "@/config/firebase";
 import React, {useState, useEffect, useCallback} from "react";
 import {Button} from "@/components/ui/button";
+import {toast} from "sonner";
+
 import {
   Dialog,
   DialogContent,
@@ -137,6 +145,10 @@ export const OutreachTaskDialog = ({
     return `https://www.google.com/s2/favicons?sz=64&domain=${domain}`;
   };
 
+  const contact = task.lead.contacts?.find(
+    (contact) => contact.id === task.contact
+  ) as Contact;
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
@@ -150,21 +162,21 @@ export const OutreachTaskDialog = ({
             {task.contact && (
               <>
                 <div className="flex items-center gap-1">
-                  {task.contact.photo_url && (
+                  {contact.photo_url && (
                     <Avatar className="w-5 h-5">
-                      <AvatarImage src={task.contact.photo_url} />
+                      <AvatarImage src={contact.photo_url} />
                       <AvatarFallback>
-                        {task.contact.name
+                        {contact.name
                           .split(" ")
                           .map((name: string) => name[0])
                           .join("")}
                       </AvatarFallback>
                     </Avatar>
                   )}
-                  {task.contact.name}
+                  {contact.name}
                 </div>
                 on{" "}
-                {task.contact.contactPoints.map((point, index) => {
+                {contact.contactPoints.map((point, index) => {
                   return (
                     <React.Fragment key={point.id}>
                       {
@@ -172,7 +184,7 @@ export const OutreachTaskDialog = ({
                           (type) => type.value === point.type
                         )?.label
                       }
-                      {index < (task.contact?.contactPoints.length || 0) - 1 &&
+                      {index < (contact?.contactPoints.length || 0) - 1 &&
                         " & "}
                     </React.Fragment>
                   );
@@ -183,9 +195,8 @@ export const OutreachTaskDialog = ({
           <DialogDescription>
             {task.contact && (
               <>
-                {task.contact.name} is the {task.contact.role} of{" "}
-                {task.lead.name} you need to{" "}
-                {task.action === "followUp" && "Follow up with them"}
+                {contact.name} is the {contact.role} of {task.lead.name} you
+                need to {task.action === "followUp" && "Follow up with them"}
                 {task.action === "initialContact" &&
                   "Reach out to them"} by{" "}
                 {format(convertTimestampToDate(task.date as Timestamp), "PPP")}
@@ -197,49 +208,14 @@ export const OutreachTaskDialog = ({
         <div className="grid gap-1">
           <h1>Contact points</h1>
           {task.contact &&
-            task.contact.contactPoints.map((point, index) => {
-              const Icon = ContactTypeData.find(
-                (type) => type.value === point.type
-              )?.icon;
-
-              return (
-                <div
-                  key={point.id}
-                  className="border p-2 rounded-md gap-4 items-center max-w-full grid grid-cols-[32px_1fr_200px]"
-                >
-                  {Icon && <Icon className="h-8 w-8" />}
-                  <div className="w-full overflow-hidden text-ellipsis whitespace-nowrap">
-                    {point.value}
-                  </div>
-                  <div className="flex gap-2 ml-auto">
-                    {isValidURL(point.value) && (
-                      <LinkButton
-                        href={point.value}
-                        target="_blank"
-                        variant={"secondary"}
-                      >
-                        Open link
-                      </LinkButton>
-                    )}
-                    <Button
-                      onClick={() =>
-                        copyToClipBoard(setCopiedContact, point.value)
-                      }
-                      variant={"secondary"}
-                    >
-                      {copiedContact ? (
-                        <>Copied</>
-                      ) : (
-                        <>
-                          <Icons.copy className="h-5 w-5" />
-                          Copy
-                        </>
-                      )}
-                    </Button>
-                  </div>
-                </div>
-              );
-            })}
+            contact.contactPoints.map((point, index) => (
+              <PointRow
+                point={point}
+                key={index}
+                lead={task.lead}
+                contact={contact}
+              />
+            ))}
         </div>
         <div className="grid gap-1">
           <h1>Notes</h1>
@@ -339,5 +315,141 @@ export const OutreachTaskDialog = ({
         </DialogFooter>
       </DialogContent>
     </Dialog>
+  );
+};
+
+const PointRow = ({
+  point,
+  lead,
+  contact,
+}: {
+  point: ContactPoint;
+  lead: Lead;
+  contact: Contact;
+}) => {
+  const [copiedContact, setCopiedContact] = useState<boolean>(false);
+
+  const copyToClipBoard = (copyFunction: any, text: string) => {
+    navigator.clipboard.writeText(text);
+    copyFunction(true);
+    setTimeout(() => {
+      copyFunction(false);
+    }, 3000);
+  };
+
+  const Icon = ContactTypeData.find((cp) => cp.value == point.type)?.icon;
+
+  const [open, setOpen] = useState(false);
+
+  const [unlocking, setUnlocking] = useState(false);
+
+  const unlockEmail = async () => {
+    try {
+      setUnlocking(true);
+      const url = `/api/unlock-email`;
+      const options = {
+        method: "POST",
+        body: JSON.stringify({id: contact.id}),
+      };
+
+      const response = await fetch(url, options);
+      if (!response.ok) {
+        throw new Error(`API error: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      if (!data.person?.email) {
+        throw new Error("No email found for this contact");
+      }
+      console.log(data);
+
+      const unlockedEmail = data.person.email;
+      const updatedContacts = [...(lead.contacts || [])];
+      const contactIndex = lead.contacts?.findIndex((c) => c.id === contact.id);
+
+      if (contactIndex === undefined || contactIndex === -1) {
+        throw new Error("Contact not found");
+      }
+
+      // Find the index of the contact point using point.id
+      const pointIndex = updatedContacts[contactIndex].contactPoints.findIndex(
+        (p) => p.id === point.id
+      );
+
+      if (pointIndex === -1) {
+        throw new Error("Contact point not found");
+      }
+
+      // Update the existing contact point
+      updatedContacts[contactIndex].contactPoints[pointIndex] = {
+        ...updatedContacts[contactIndex].contactPoints[pointIndex],
+        value: unlockedEmail,
+      };
+
+      await updateDoc(doc(db, `companies/${lead.id}`), {
+        contacts: updatedContacts,
+      });
+    } catch (error) {
+      toast.error("Error unlocking email", {
+        description:
+          error instanceof Error ? error.message : "An unknown error occurred",
+      });
+    } finally {
+      setUnlocking(false);
+    }
+  };
+
+  return (
+    <div className="w-full flex items-center">
+      <div
+        className={`items-center flex-grow border gap-2 rounded-md shadow-sm p-2  w-full grid   ${
+          point.type == "email" &&
+          point.value == "email_not_unlocked@domain.com"
+            ? "grid-cols-[32px_1fr]"
+            : "grid-cols-[32px_1fr_100px]"
+        }`}
+      >
+        {Icon && <Icon className="h-6 w-6 text-primary" />}
+        {point.type == "email" &&
+        point.value == "email_not_unlocked@domain.com" ? (
+          <Button
+            onClick={unlockEmail}
+            disabled={unlocking}
+            variant={"secondary"}
+            className="w-full overflow-hidden text-ellipsis whitespace-nowrap"
+          >
+            {unlocking ? (
+              <Icons.loader className="h-4 w-4 animate-spin" />
+            ) : (
+              <>
+                <Icons.lock className="h-4 w-4" />
+                Unlock email (This will charge credits)
+              </>
+            )}
+          </Button>
+        ) : (
+          <>
+            <div className="w-full overflow-hidden text-ellipsis whitespace-nowrap">
+              {point.value}
+            </div>
+
+            <Button
+              onClick={() => copyToClipBoard(setCopiedContact, point.value)}
+              variant={"secondary"}
+              className="ml-auto"
+            >
+              {copiedContact ? (
+                <>Copied</>
+              ) : (
+                <>
+                  <Icons.copy className="h-5 w-5 " />
+                  Copy
+                </>
+              )}
+            </Button>
+          </>
+        )}
+      </div>
+    </div>
   );
 };

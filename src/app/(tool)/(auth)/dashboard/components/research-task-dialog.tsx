@@ -156,7 +156,7 @@ export const ResearchTaskDialog = ({
         id: crypto.randomUUID(),
         isCompleted: false,
         action: "initialContact",
-        contact: contact,
+        contact: contact.id,
         date: convertDateToTimestamp(startDate) as Timestamp,
         taskCadence: task.taskCadence,
       } as Task);
@@ -179,7 +179,7 @@ export const ResearchTaskDialog = ({
             id: crypto.randomUUID(),
             isCompleted: false,
             action: "followUp",
-            contact: contact,
+            contact: contact.id,
             date: convertDateToTimestamp(followUpDate) as Timestamp,
             taskCadence: task.taskCadence,
           } as Task);

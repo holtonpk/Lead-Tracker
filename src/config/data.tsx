@@ -135,7 +135,10 @@ export type Task = {
   id: string;
   isCompleted: boolean;
   action: TaskActions;
-  contact?: Contact;
+  // contactId?: string;
+  // contactPoints?: string[];
+  contact: string;
+  // contact: Contact;
   date: Timestamp;
   outreachCopy?: string;
   assignedTo?: string;
