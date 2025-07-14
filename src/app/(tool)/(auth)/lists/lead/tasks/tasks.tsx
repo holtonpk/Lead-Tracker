@@ -142,7 +142,7 @@ const TaskLine = ({
 
   const updateTaskDescription = async (newDescription: string) => {
     try {
-      const docRef = doc(db, "companies", lead.id);
+      const docRef = doc(db, "companies-fixed", lead.id);
 
       // Find the task index in the tasks array
       const taskIndex = lead.tasks?.findIndex((task) => task.id === task.id);
@@ -165,7 +165,7 @@ const TaskLine = ({
 
   const toggleTaskCompletion = async () => {
     try {
-      const docRef = doc(db, "companies", lead.id);
+      const docRef = doc(db, "companies-fixed", lead.id);
 
       const taskToUpdate = lead.tasks?.find((taskL) => taskL.id === task.id);
       if (!taskToUpdate) {
@@ -188,7 +188,7 @@ const TaskLine = ({
 
   const deleteTask = async () => {
     try {
-      const docRef = doc(db, "companies", lead.id);
+      const docRef = doc(db, "companies-fixed", lead.id);
 
       // Filter out the task to be deleted
       const updatedTasks = lead.tasks?.filter((taskL) => taskL.id !== task.id);

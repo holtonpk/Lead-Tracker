@@ -51,7 +51,7 @@ export const NewContactButton = ({
       setIsLoading(true);
 
       // Batch the Firestore operations
-      const docRef = doc(db, "companies", leadId);
+      const docRef = doc(db, "companies-fixed", leadId);
 
       const newContact = {
         id: crypto.randomUUID(), // Add unique ID for future updates/deletions

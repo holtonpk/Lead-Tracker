@@ -101,7 +101,7 @@ export const OutreachTaskDialog = ({
   const debouncedUpdateOutreachCopy = useCallback(
     debounce(async (newOutreachCopy: string) => {
       try {
-        const docRef = doc(db, "companies", task.lead.id);
+        const docRef = doc(db, "companies-fixed", task.lead.id);
 
         // Update only the specific task's outreach copy
         const updatedTasks = task.lead.tasks?.map((taskItem) =>
@@ -123,7 +123,7 @@ export const OutreachTaskDialog = ({
   const debouncedUpdateNotes = useCallback(
     debounce(async (newNotes: string) => {
       try {
-        await updateDoc(doc(db, "companies", task.lead.id), {
+        await updateDoc(doc(db, "companies-fixed", task.lead.id), {
           notes: newNotes,
         });
       } catch (error) {
@@ -156,7 +156,7 @@ export const OutreachTaskDialog = ({
       </DialogTrigger>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle className="flex items-center gap-1">
+          <DialogTitle className="flex items-center whitespace-nowrap flex-wrap gap-1">
             {task.action === "followUp" && "Follow up with"}
             {task.action === "initialContact" && "Reach out to"}{" "}
             {task.contact && (
@@ -353,6 +353,7 @@ const PointRow = ({
       };
 
       const response = await fetch(url, options);
+      console.log("rr", response);
       if (!response.ok) {
         throw new Error(`API error: ${response.statusText}`);
       }

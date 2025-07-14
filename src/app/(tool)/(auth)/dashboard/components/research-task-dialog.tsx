@@ -87,7 +87,7 @@ export const ResearchTaskDialog = ({
   const debouncedUpdateOutreachCopy = useCallback(
     debounce(async (newOutreachCopy: string) => {
       try {
-        const docRef = doc(db, "companies", task.lead.id);
+        const docRef = doc(db, "companies-fixed", task.lead.id);
 
         // update the outreach copy for all tasks in that lead
         const tasks = task.lead.tasks;
@@ -110,7 +110,7 @@ export const ResearchTaskDialog = ({
   const debouncedUpdateNotes = useCallback(
     debounce(async (newNotes: string) => {
       try {
-        await updateDoc(doc(db, "companies", task.lead.id), {
+        await updateDoc(doc(db, "companies-fixed", task.lead.id), {
           notes: newNotes,
         });
       } catch (error) {
@@ -142,7 +142,7 @@ export const ResearchTaskDialog = ({
     }
 
     try {
-      const docRef = doc(db, "companies", task.lead.id);
+      const docRef = doc(db, "companies-fixed", task.lead.id);
       const newTasks: Task[] = [];
 
       // Create initial contact task for the new contact on the start date

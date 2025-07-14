@@ -55,7 +55,7 @@ export const CreateNewList = ({
     });
 
     selectedCompanies.forEach(async (companyId) => {
-      const docRef = doc(db, "companies", companyId);
+      const docRef = doc(db, "companies-fixed", companyId);
       const docSnap = await getDoc(docRef);
       const data = docSnap.data();
       const listOld = (data && data.lists) || [];
@@ -81,7 +81,7 @@ export const CreateNewList = ({
   };
 
   useEffect(() => {
-    const clientIdeaDataQuery = query(collection(db, "companies"));
+    const clientIdeaDataQuery = query(collection(db, "companies-fixed"));
 
     const unsubscribe = onSnapshot(clientIdeaDataQuery, (querySnapshot) => {
       const leadsData: Lead[] = [];

@@ -35,7 +35,7 @@ export const OutreachTaskRow = ({task}: OutreachTaskRowProps) => {
 
   const deleteTask = async () => {
     try {
-      const docRef = doc(db, "companies", task.lead.id);
+      const docRef = doc(db, "companies-fixed", task.lead.id);
 
       // Filter out the task to be deleted
       const updatedTasks = task.lead.tasks?.filter(

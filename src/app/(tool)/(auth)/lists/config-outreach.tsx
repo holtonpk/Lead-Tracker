@@ -193,7 +193,7 @@ export const ConfigOutreach = ({leads}: {leads: Lead[]}) => {
     for (const taskGroup of taskGroups) {
       for (const lead of taskGroup.leads) {
         try {
-          const docRef = doc(db, "companies", lead.id);
+          const docRef = doc(db, "companies-fixed", lead.id);
 
           // Get tasks for this specific lead using leadId
           const leadTasks = taskGroup.tasks.filter((task: Task) => {
@@ -235,7 +235,7 @@ export const ConfigOutreach = ({leads}: {leads: Lead[]}) => {
     setIsDeleting(true);
     try {
       for (const lead of leads) {
-        await updateDoc(doc(db, "companies", lead.id), {
+        await updateDoc(doc(db, "companies-fixed", lead.id), {
           tasks: deleteField(),
           updatedAt: serverTimestamp(),
         });

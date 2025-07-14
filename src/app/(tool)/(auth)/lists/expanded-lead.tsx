@@ -55,7 +55,7 @@ export const ExpandedLead = ({
   const [notes, setNotes] = useState(lead.notes || "");
 
   const updateField = async (field: string, value: any) => {
-    const leadRef = doc(db, "companies", lead.id);
+    const leadRef = doc(db, "companies-fixed", lead.id);
     await updateDoc(leadRef, {
       [field]: value,
     });

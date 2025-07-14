@@ -353,7 +353,7 @@ export const Rating = ({id, score}: {id: string; score: number}) => {
   const displayValue = hoveredValue !== null ? hoveredValue : value; // Show hovered or actual score
 
   const onValueChange = (newValue: number) => {
-    updateDoc(doc(db, "companies", id), {
+    updateDoc(doc(db, "companies-fixed", id), {
       score: newValue,
     });
     setValue(newValue); // Update score

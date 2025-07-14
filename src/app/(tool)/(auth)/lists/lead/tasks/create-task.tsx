@@ -81,7 +81,7 @@ export const CreateNextTask = ({lead}: {lead: Lead}) => {
 
     try {
       setIsLoading(true);
-      const docRef = doc(db, "companies", lead.id);
+      const docRef = doc(db, "companies-fixed", lead.id);
       await updateDoc(docRef, {
         tasks: arrayUnion({
           id: crypto.randomUUID(),
@@ -107,7 +107,7 @@ export const CreateNextTask = ({lead}: {lead: Lead}) => {
     try {
       setIsLoading(true);
 
-      const docRef = doc(db, "companies", lead.id);
+      const docRef = doc(db, "companies-fixed", lead.id);
 
       const tasksToAdd = [];
 
@@ -171,7 +171,7 @@ export const CreateNextTask = ({lead}: {lead: Lead}) => {
   const setAsComplete = async () => {
     setIsLoading(true);
 
-    const docRef = doc(db, "companies", lead.id);
+    const docRef = doc(db, "companies-fixed", lead.id);
     updateDoc(docRef, {
       completed: {
         type: action,
@@ -184,7 +184,7 @@ export const CreateNextTask = ({lead}: {lead: Lead}) => {
   const removeComplete = async () => {
     setIsLoading(true);
 
-    const docRef = doc(db, "companies", lead.id);
+    const docRef = doc(db, "companies-fixed", lead.id);
     await updateDoc(docRef, {
       completed: deleteField(), // Removes the 'completed' field
     });

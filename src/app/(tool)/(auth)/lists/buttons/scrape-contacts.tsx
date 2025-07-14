@@ -71,7 +71,7 @@ export const ScrapeContacts = ({
   };
 
   const addContactsToLead = async (people: People[]) => {
-    const leadRef = doc(collection(db, "companies"), leadId);
+    const leadRef = doc(collection(db, "companies-fixed"), leadId);
     await updateDoc(leadRef, {
       people: people,
     });
