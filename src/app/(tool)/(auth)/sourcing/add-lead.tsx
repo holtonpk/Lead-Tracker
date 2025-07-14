@@ -348,7 +348,7 @@ export const NewContactButton = ({
       setIsLoading(true);
 
       // Batch the Firestore operations
-      const docRef = doc(db, "companies", leadId);
+      const docRef = doc(db, "companies-fixed", leadId);
 
       // Use arrayUnion instead of fetching + updating
       await updateDoc(docRef, {
