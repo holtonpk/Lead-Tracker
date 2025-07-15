@@ -36,7 +36,7 @@ export const RemoveFromList = ({
     try {
       // Ensure companies exist and update them
       const updatePromises = (companies ?? []).map(async (company) => {
-        await updateDoc(doc(db, `crunchbase/${company.id}`), {
+        await updateDoc(doc(db, `companies-fixed/${company.id}`), {
           lists: arrayRemove(listId), // Remove listId from the "lists" array
         });
       });

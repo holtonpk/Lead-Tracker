@@ -10,6 +10,8 @@ import {
 } from "@/config/data";
 import {db} from "@/config/firebase";
 import React, {useState, useEffect, useCallback} from "react";
+// Use lodash.debounce for consistent debounce behavior (with .cancel())
+import debounce from "lodash.debounce";
 import {Button} from "@/components/ui/button";
 import {toast} from "sonner";
 
@@ -53,18 +55,6 @@ interface OutreachTaskDialogProps {
   onOpenChange: (open: boolean) => void;
 }
 
-// Debounce utility function
-function debounce<T extends (...args: any[]) => any>(
-  func: T,
-  wait: number
-): (...args: Parameters<T>) => void {
-  let timeout: NodeJS.Timeout;
-  return (...args: Parameters<T>) => {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => func(...args), wait);
-  };
-}
-
 export const OutreachTaskDialog = ({
   task,
   isCompleted,
@@ -80,6 +70,8 @@ export const OutreachTaskDialog = ({
     task.outreachCopy
   );
   const [notes, setNotes] = useState<string | undefined>(task.lead.notes);
+  const [isSavingOutreach, setIsSavingOutreach] = useState(false);
+  const [isSavingNotes, setIsSavingNotes] = useState(false);
 
   useEffect(() => {
     setOutreachCopy(task.outreachCopy);
@@ -97,41 +89,68 @@ export const OutreachTaskDialog = ({
     }, 3000);
   };
 
-  // Debounced update functions
-  const debouncedUpdateOutreachCopy = useCallback(
-    debounce(async (newOutreachCopy: string) => {
+  // Debounced save function for outreachCopy
+  const saveOutreachCopy = useCallback(
+    debounce(async (newOutreachCopy: string | undefined) => {
+      if (
+        newOutreachCopy === undefined ||
+        newOutreachCopy === task.outreachCopy
+      )
+        return;
+      setIsSavingOutreach(true);
       try {
         const docRef = doc(db, "companies-fixed", task.lead.id);
-
         // Update only the specific task's outreach copy
         const updatedTasks = task.lead.tasks?.map((taskItem) =>
           taskItem.id === task.id
             ? {...taskItem, outreachCopy: newOutreachCopy}
             : taskItem
         );
-
         await updateDoc(docRef, {
           tasks: updatedTasks,
         });
       } catch (error) {
         console.error("Error updating task outreach copy:", error);
+      } finally {
+        setIsSavingOutreach(false);
       }
     }, 1000),
-    [task.lead.id, task.lead.tasks, task.id]
+    [task.lead.id, task.lead.tasks, task.id, task.outreachCopy]
   );
 
-  const debouncedUpdateNotes = useCallback(
-    debounce(async (newNotes: string) => {
+  // Effect to trigger save when outreachCopy changes
+  useEffect(() => {
+    saveOutreachCopy(outreachCopy);
+    return () => {
+      saveOutreachCopy.cancel();
+    };
+  }, [outreachCopy, saveOutreachCopy]);
+
+  // Debounced save function for notes
+  const saveNotes = useCallback(
+    debounce(async (newNotes: string | undefined) => {
+      if (newNotes === undefined || newNotes === task.lead.notes) return;
+      setIsSavingNotes(true);
       try {
         await updateDoc(doc(db, "companies-fixed", task.lead.id), {
           notes: newNotes,
         });
       } catch (error) {
         console.error("Error updating lead notes:", error);
+      } finally {
+        setIsSavingNotes(false);
       }
     }, 1000),
-    [task.lead.id]
+    [task.lead.id, task.lead.notes]
   );
+
+  // Effect to trigger save when notes changes
+  useEffect(() => {
+    saveNotes(notes);
+    return () => {
+      saveNotes.cancel();
+    };
+  }, [notes, saveNotes]);
 
   const getFaviconUrl = (url: string) => {
     const cleanedWebsite = (website: string) => {
@@ -223,11 +242,13 @@ export const OutreachTaskDialog = ({
             <Textarea
               className="h-full overflow-scroll noResize w-full pb-20"
               value={notes}
-              onChange={(e) => {
-                setNotes(e.target.value);
-                debouncedUpdateNotes(e.target.value);
-              }}
+              onChange={(e) => setNotes(e.target.value)}
             />
+            {isSavingNotes && (
+              <p className="text-xs text-muted-foreground absolute bottom-2 left-2">
+                Saving...
+              </p>
+            )}
           </div>
         </div>
         <div className="grid gap-1">
@@ -239,11 +260,13 @@ export const OutreachTaskDialog = ({
             <Textarea
               className="h-full overflow-scroll noResize w-full pb-20"
               value={outreachCopy}
-              onChange={(e) => {
-                setOutreachCopy(e.target.value);
-                debouncedUpdateOutreachCopy(e.target.value);
-              }}
+              onChange={(e) => setOutreachCopy(e.target.value)}
             />
+            {isSavingOutreach && (
+              <p className="text-xs text-muted-foreground absolute bottom-2 left-2">
+                Saving...
+              </p>
+            )}
             <div className="flex gap-2 ml-auto absolute bottom-2 right-2">
               {outreachCopy && (
                 <Button
