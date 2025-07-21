@@ -159,7 +159,7 @@ const Page = () => {
     });
 
     // delete the doc in /companies
-    await deleteDoc(doc(db, `companies/${selectedLead.id}`));
+    await deleteDoc(doc(db, `companies-fixed/${selectedLead.id}`));
   };
 
   const cleanedWebsite = (website: string) => {

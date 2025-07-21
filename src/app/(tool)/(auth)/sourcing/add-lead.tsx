@@ -114,6 +114,10 @@ const AddContacts = ({
       await updateDoc(doc(db, `crunchbase-data/${companyInfo.name}`), {
         contacts: updatedContacts,
       });
+      // Also update companies-fixed collection
+      await updateDoc(doc(db, `companies-fixed/${selectedLead.id}`), {
+        contacts: updatedContacts,
+      });
     } else {
       // Convert person to Contact data type
       const newContact: Contact = {
@@ -147,19 +151,11 @@ const AddContacts = ({
       await updateDoc(doc(db, `crunchbase-data/${companyInfo.name}`), {
         contacts: updatedContacts,
       });
-      addToGoodContacts(updatedContacts);
+      // Also update companies-fixed collection
+      await updateDoc(doc(db, `companies-fixed/${selectedLead.id}`), {
+        contacts: updatedContacts,
+      });
     }
-
-    // await updateDoc(doc(db, `companies/${lead.id}`), {
-    //   contacts: updatedContacts,
-    // });
-  };
-
-  const addToGoodContacts = async (contacts: Contact[]) => {
-    // add the contacts to the lead
-    await updateDoc(doc(db, `crunchbase-data/${companyInfo.name}`), {
-      contacts: arrayUnion(...contacts),
-    });
   };
 
   const removeSelectedOrganization = async () => {
@@ -303,7 +299,11 @@ export const ScrapeContacts = ({
       people: arrayUnion(...people),
     });
 
-    console.log("contacts", people);
+    // Also add people to companies-fixed collection
+    await updateDoc(doc(db, `companies-fixed/${selectedLead.id}`), {
+      people: arrayUnion(...people),
+      id: selectedLead.id,
+    });
   };
 
   return (
