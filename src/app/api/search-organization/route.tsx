@@ -22,7 +22,7 @@ export async function POST(req: Request) {
 }
 
 export async function GET() {
-  const organizationName = "(Re)vive";
+  const organizationName = "AI Beauty Bot";
 
   const options = {
     method: "POST",

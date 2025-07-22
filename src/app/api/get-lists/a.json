@@ -1,0 +1,34 @@
+[
+  {
+    "_id": "687e92efcf442500158f861f",
+    "cached_count": 0,
+    "concurrency_locks": null,
+    "created_at": "2025-07-21T19:20:15.285Z",
+    "modality": "contacts",
+    "name": "Ceilings (Have socials, try organic, limited traction)",
+    "need_cached_count_update": null,
+    "needs_count_update_at": null,
+    "rule_config_template_id": null,
+    "team_id": "686458c7a9ad580011993a1c",
+    "updated_at": "2025-07-21T19:20:15.285Z",
+    "user_id": "686458caa9ad580011993be0",
+    "id": "687e92efcf442500158f861f",
+    "key": "687e92efcf442500158f861f"
+  },
+  {
+    "_id": "6879bbf19e6b6e00214460e7",
+    "cached_count": 131,
+    "concurrency_locks": {},
+    "created_at": "2025-07-18T03:13:53.225Z",
+    "modality": "contacts",
+    "name": "Contacts",
+    "need_cached_count_update": false,
+    "needs_count_update_at": "2025-07-18T03:13:55.964+00:00",
+    "rule_config_template_id": null,
+    "team_id": "686458c7a9ad580011993a1c",
+    "updated_at": "2025-07-18T03:13:55.999Z",
+    "user_id": "686458caa9ad580011993be0",
+    "id": "6879bbf19e6b6e00214460e7",
+    "key": "6879bbf19e6b6e00214460e7"
+  }
+]
