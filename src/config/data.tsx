@@ -21,6 +21,7 @@ export const ADMIN_USERS = [
 ];
 
 export type Lead = {
+  apollo_id?: string;
   name: string;
   description: string;
   sourceId: string;
@@ -40,6 +41,7 @@ export type Lead = {
   completed?: Completed;
   people?: People[];
   organization_id?: string | null;
+  apollo_lists?: string[];
 };
 
 type Completed = {
@@ -96,6 +98,7 @@ export type Contact = {
   role: string;
   photo_url?: string;
   contactPoints: ContactPoint[];
+  apollo_id?: string;
 };
 
 export type ContactPoint = {
