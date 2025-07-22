@@ -85,7 +85,7 @@ export const Apollo = () => {
                 />
                 <h1>{lead.name}</h1>
                 <div className="flex items-center gap-2 ml-auto">
-                  {lead.apollo_lists?.map((list) => (
+                  {lead?.apollo_lists?.map((list) => (
                     <div
                       key={list}
                       className="text-sm p-2 text-blue-500 bg-blue-500/10 rounded-md"
